@@ -235,7 +235,7 @@
       "unreadable": "The file could not be read.",
       "rate_limited": "The AI service is busy. Try again in a few minutes.",
       "quota_exhausted": "The daily AI limit is reached. Try again later.",
-      "queue_unavailable": "Processing could not be started.",
+      "queue_unavailable": "The processing service could not be reached.",
       "not_found": "The document no longer exists.",
       "unknown": "Something went wrong."
     }

@@ -3,6 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { describeError } from "@/lib/errors";
 import { detectFileType, MAX_UPLOAD_BYTES } from "@/lib/files";
 import { todayIso } from "@/lib/dates";
 import { auditInsert } from "@/server/audit";
@@ -102,7 +103,7 @@ export async function POST(request: Request) {
     if (String((error as Error)?.message).includes("documents_user_id_sha256_unique")) {
       return fail(409, { ok: false, error: "duplicate" });
     }
-    console.error("Upload failed", error);
+    console.error(`Upload failed: ${describeError(error)}`);
     return fail(500, { ok: false, error: "failed" });
   }
 
@@ -112,8 +113,9 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     // The file is stored; the user can start processing again with Retry.
-    console.error("Could not queue document processing", error);
-    await markFailed({ documentId, userId }, "queue_unavailable");
+    const detail = describeError(error);
+    console.error(`Could not queue document processing: ${detail}`);
+    await markFailed({ documentId, userId }, "queue_unavailable", detail);
   }
 
   return NextResponse.json<UploadResponse>({ ok: true, documentId }, { status: 201 });

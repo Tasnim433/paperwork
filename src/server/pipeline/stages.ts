@@ -47,7 +47,7 @@ async function loadDocument({ documentId, userId }: Ref) {
 export async function setStage({ documentId, userId }: Ref, stage: ProcessingStage) {
   await db
     .update(documents)
-    .set({ status: "processing", processingStage: stage, errorMessage: null })
+    .set({ status: "processing", processingStage: stage, errorMessage: null, errorDetail: null })
     .where(and(eq(documents.id, documentId), eq(documents.userId, userId)));
 }
 
@@ -245,7 +245,13 @@ export async function summarize(ref: Ref) {
   await db.batch([
     db
       .update(documents)
-      .set({ summary, status: "needs_review", processingStage: null, errorMessage: null })
+      .set({
+        summary,
+        status: "needs_review",
+        processingStage: null,
+        errorMessage: null,
+        errorDetail: null,
+      })
       .where(eq(documents.id, doc.id)),
     auditInsert({
       userId: doc.userId,
@@ -267,8 +273,11 @@ export async function summarize(ref: Ref) {
   ]);
 }
 
-/** Marks a document as failed in the stage it was in. */
-export async function markFailed(ref: Ref, code: string) {
+/**
+ * Marks a document as failed in the stage it was in. `code` is translated in the
+ * UI; `detail` is the technical error shown underneath (see describeError).
+ */
+export async function markFailed(ref: Ref, code: string, detail: string | null = null) {
   const doc = await db.query.documents.findFirst({
     where: and(eq(documents.id, ref.documentId), eq(documents.userId, ref.userId)),
     columns: { id: true, status: true, processingStage: true },
@@ -277,7 +286,7 @@ export async function markFailed(ref: Ref, code: string) {
   await db.batch([
     db
       .update(documents)
-      .set({ status: "failed", errorMessage: code })
+      .set({ status: "failed", errorMessage: code, errorDetail: detail })
       .where(eq(documents.id, doc.id)),
     auditInsert({
       userId: ref.userId,
@@ -286,7 +295,7 @@ export async function markFailed(ref: Ref, code: string) {
       entityType: "document",
       entityId: doc.id,
       before: { status: doc.status },
-      after: { status: "failed", stage: doc.processingStage, error: code },
+      after: { status: "failed", stage: doc.processingStage, error: code, detail },
     }),
   ]);
 }

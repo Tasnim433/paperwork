@@ -26,6 +26,7 @@ export async function listInbox(userId: string) {
       status: documents.status,
       processingStage: documents.processingStage,
       errorCode: documents.errorMessage,
+      errorDetail: documents.errorDetail,
       type: documents.type,
       sender: documents.sender,
       originalFileName: documents.originalFileName,

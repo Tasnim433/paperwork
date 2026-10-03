@@ -46,6 +46,11 @@ async function InboxStatus({ doc }: { doc: InboxRow }) {
           <span className="pl-3.5 text-xs text-muted-foreground">
             {t(`inboxStatus.errors.${code}`)}
           </span>
+          {doc.errorDetail && (
+            <span className="max-w-[420px] pl-3.5 font-mono text-[11px] break-words whitespace-normal text-muted-foreground">
+              {doc.errorDetail}
+            </span>
+          )}
         </span>
       );
     }

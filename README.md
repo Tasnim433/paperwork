@@ -46,6 +46,8 @@ Open http://localhost:3000, create an account and upload a letter in the Inbox. 
 
 `.env.local` needs `INNGEST_DEV=1` so the app sends events to the local dev server. If the app runs on another port, start the dev server with `pnpm exec inngest-cli dev -u http://localhost:<port>/api/inngest --no-discovery`. Uploads made while the dev server is not running show as failed in the Inbox; start it and press Retry.
 
+Failed documents show the technical error under the reason. `connect ECONNREFUSED ::1:8288; connect ECONNREFUSED 127.0.0.1:8288` means nothing is listening on port 8288: start `pnpm inngest:dev` (only one instance can use the port) and check that http://localhost:8288 opens.
+
 ### Processing pipeline
 
 Each upload is stored unchanged (`users/{userId}/{documentId}/original.{ext}`) and processed in separate, individually retried steps:

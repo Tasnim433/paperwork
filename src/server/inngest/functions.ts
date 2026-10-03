@@ -1,3 +1,5 @@
+import { describeError } from "@/lib/errors";
+
 import { errorCode, nonRetriable, withRateLimitRetry } from "../pipeline/errors";
 import {
   classify,
@@ -23,7 +25,7 @@ export const processDocument = inngest.createFunction(
     concurrency: { limit: 2 },
     onFailure: async ({ event, error }) => {
       const ref = event.data.event.data;
-      await markFailed(ref, errorCode(error));
+      await markFailed(ref, errorCode(error), describeError(error));
     },
   },
   async ({ event, step, attempt }) => {

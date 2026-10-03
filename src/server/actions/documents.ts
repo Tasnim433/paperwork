@@ -6,6 +6,8 @@ import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { describeError } from "@/lib/errors";
+
 import { auditInsert } from "../audit";
 import { db } from "../db";
 import { documents } from "../db/schema";
@@ -32,7 +34,7 @@ export async function retryDocument(documentId: string) {
   await db.batch([
     db
       .update(documents)
-      .set({ status: "received", processingStage: null, errorMessage: null })
+      .set({ status: "received", processingStage: null, errorMessage: null, errorDetail: null })
       .where(eq(documents.id, doc.id)),
     auditInsert({
       userId: user.id,
@@ -53,8 +55,9 @@ export async function retryDocument(documentId: string) {
       ),
     );
   } catch (error) {
-    console.error("Could not queue document processing", error);
-    await markFailed({ documentId: doc.id, userId: user.id }, "queue_unavailable");
+    const detail = describeError(error);
+    console.error(`Could not queue document processing: ${detail}`);
+    await markFailed({ documentId: doc.id, userId: user.id }, "queue_unavailable", detail);
   }
 
   revalidatePath("/", "layout");

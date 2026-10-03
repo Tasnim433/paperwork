@@ -235,7 +235,7 @@
       "unreadable": "Die Datei konnte nicht gelesen werden.",
       "rate_limited": "Der KI-Dienst ist ausgelastet. Versuche es in ein paar Minuten erneut.",
       "quota_exhausted": "Das tägliche KI-Limit ist erreicht. Versuche es später erneut.",
-      "queue_unavailable": "Die Verarbeitung konnte nicht gestartet werden.",
+      "queue_unavailable": "Der Verarbeitungsdienst war nicht erreichbar.",
       "not_found": "Das Dokument existiert nicht mehr.",
       "unknown": "Etwas ist schiefgelaufen."
     }

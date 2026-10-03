@@ -28,6 +28,8 @@ export const documents = pgTable(
     processingStage: processingStage(),
     /** User-safe code of the last failure (e.g. "rate_limited"), translated in the UI. */
     errorMessage: text(),
+    /** Technical description of the last failure (causes unwrapped), shown under the reason. */
+    errorDetail: text(),
     type: documentType(),
     typeConfidence: real(),
     originalFileName: text().notNull(),
