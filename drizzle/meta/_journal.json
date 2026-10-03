@@ -8,6 +8,13 @@
       "when": 1791037718337,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791062357267,
+      "tag": "0001_pipeline",
+      "breakpoints": true
     }
   ]
 }

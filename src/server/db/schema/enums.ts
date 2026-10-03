@@ -7,7 +7,19 @@ export const documentStatus = pgEnum("document_status", [
   "confirmed",
   "information_only",
   "rejected",
+  "failed",
 ]);
+
+/** Pipeline stage a document is in (or failed in, when status is "failed"). */
+export const processingStage = pgEnum("processing_stage", [
+  "text_recognition",
+  "classification",
+  "extraction",
+  "validation",
+  "summary",
+]);
+
+export const pageTextSource = pgEnum("page_text_source", ["text_layer", "ocr"]);
 
 export const documentType = pgEnum("document_type", [
   "invoice",
@@ -28,6 +40,7 @@ export const taskStatus = pgEnum("task_status", ["open", "done"]);
 export const auditActor = pgEnum("audit_actor", ["system", "ai", "user"]);
 
 export type DocumentStatus = (typeof documentStatus.enumValues)[number];
+export type ProcessingStage = (typeof processingStage.enumValues)[number];
 export type DocumentType = (typeof documentType.enumValues)[number];
 export type FieldState = (typeof fieldState.enumValues)[number];
 export type TaskKind = (typeof taskKind.enumValues)[number];

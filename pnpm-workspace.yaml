@@ -2,5 +2,8 @@ allowBuilds:
   "@parcel/watcher": false
   "@swc/core": false
   esbuild: true
+  inngest-cli: true
+  protobufjs: false
   sharp: false
+  tesseract.js: false
   unrs-resolver: false
