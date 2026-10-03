@@ -1,6 +1,6 @@
-import { PlaceholderPage, placeholderMetadata } from "@/components/placeholder-page";
+import { PlaceholderPage, pageMetadata } from "@/components/placeholder-page";
 
-export const generateMetadata = () => placeholderMetadata("review");
+export const generateMetadata = () => pageMetadata("review");
 
 export default function Page() {
   return <PlaceholderPage page="review" />;

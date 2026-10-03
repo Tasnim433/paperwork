@@ -6,7 +6,7 @@ import { PageHeader } from "./page-header";
 export type PageKey =
   "overview" | "inbox" | "review" | "tasks" | "records" | "workDays" | "settings" | "help";
 
-export async function placeholderMetadata(page: PageKey): Promise<Metadata> {
+export async function pageMetadata(page: PageKey): Promise<Metadata> {
   const t = await getTranslations("pages");
   return { title: t(`${page}.title`), description: t(`${page}.description`) };
 }
