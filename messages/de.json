@@ -200,5 +200,44 @@
     },
     "review": "Prüfen",
     "empty": "Der Posteingang ist leer. Alles ist geprüft."
+  },
+  "upload": {
+    "dropTitle": "Datei hier ablegen",
+    "dropHint": "PDF, JPG oder PNG, bis 20 MB.",
+    "dropActive": "Loslassen zum Hochladen",
+    "chooseFile": "Datei auswählen",
+    "uploading": "{name} wird hochgeladen …",
+    "uploaded": "{name} hochgeladen. Die Verarbeitung hat begonnen.",
+    "errors": {
+      "tooLarge": "{name} ist größer als 20 MB.",
+      "empty": "{name} ist leer.",
+      "unsupportedType": "{name} ist keine PDF-, JPG- oder PNG-Datei.",
+      "duplicate": "Du hast {name} bereits am {date} hochgeladen.",
+      "duplicateNoDate": "Du hast {name} bereits hochgeladen.",
+      "unauthorized": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
+      "noFile": "Es wurde keine Datei empfangen. Bitte versuche es erneut.",
+      "failed": "{name} konnte nicht hochgeladen werden. Bitte versuche es erneut."
+    }
+  },
+  "stage": {
+    "text_recognition": "Texterkennung",
+    "classification": "Klassifizierung",
+    "extraction": "Extraktion",
+    "validation": "Prüfung",
+    "summary": "Zusammenfassung"
+  },
+  "inboxStatus": {
+    "queued": "In Warteschlange",
+    "failedAt": "Fehler bei {stage}",
+    "failed": "Fehlgeschlagen",
+    "retry": "Erneut versuchen",
+    "errors": {
+      "unreadable": "Die Datei konnte nicht gelesen werden.",
+      "rate_limited": "Der KI-Dienst ist ausgelastet. Versuche es in ein paar Minuten erneut.",
+      "quota_exhausted": "Das tägliche KI-Limit ist erreicht. Versuche es später erneut.",
+      "queue_unavailable": "Die Verarbeitung konnte nicht gestartet werden.",
+      "not_found": "Das Dokument existiert nicht mehr.",
+      "unknown": "Etwas ist schiefgelaufen."
+    }
   }
 }

@@ -1,9 +1,8 @@
 import { Search, User } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { UploadButton } from "@/components/upload/upload-button";
 import { initials } from "@/lib/initials";
 
 import { Breadcrumb } from "./breadcrumb";
@@ -27,9 +26,7 @@ export function Topbar({ user }: { user: { name: string; email: string } }) {
           className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground"
         />
       </label>
-      <Button asChild size="sm">
-        <Link href="/inbox">{t("upload")}</Link>
-      </Button>
+      <UploadButton />
       <ThemeSwitch />
       <LanguageSwitch />
       <Avatar className="size-[30px]" title={`${user.name} · ${user.email}`}>

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { AutoRefresh } from "@/components/data/auto-refresh";
 import { InboxTable } from "@/components/data/inbox-table";
 import { Metrics } from "@/components/data/metrics";
 import { SectionTitle } from "@/components/data/table";
@@ -9,7 +10,7 @@ import { pageMetadata } from "@/components/placeholder-page";
 import { timeOfDay, todayIso } from "@/lib/dates";
 import { firstName } from "@/lib/initials";
 import { overviewMetrics, summaryKey } from "@/lib/summary";
-import { listInbox } from "@/server/queries/documents";
+import { activeStatuses, listInbox } from "@/server/queries/documents";
 import { listTasks } from "@/server/queries/tasks";
 import { requireSession } from "@/server/session";
 
@@ -55,6 +56,9 @@ export default async function OverviewPage() {
         <SectionTitle>{t("waitingForReview")}</SectionTitle>
         <InboxTable documents={inbox} />
       </section>
+      <AutoRefresh
+        active={inbox.some((doc) => (activeStatuses as readonly string[]).includes(doc.status))}
+      />
     </>
   );
 }

@@ -200,5 +200,44 @@
     },
     "review": "Review",
     "empty": "Inbox is empty. Everything has been reviewed."
+  },
+  "upload": {
+    "dropTitle": "Drop a file here",
+    "dropHint": "PDF, JPG or PNG, up to 20 MB.",
+    "dropActive": "Release to upload",
+    "chooseFile": "Choose file",
+    "uploading": "Uploading {name}…",
+    "uploaded": "{name} uploaded. Processing has started.",
+    "errors": {
+      "tooLarge": "{name} is larger than 20 MB.",
+      "empty": "{name} is empty.",
+      "unsupportedType": "{name} is not a PDF, JPG or PNG file.",
+      "duplicate": "You already uploaded {name} on {date}.",
+      "duplicateNoDate": "You already uploaded {name}.",
+      "unauthorized": "Your session has expired. Please sign in again.",
+      "noFile": "No file was received. Please try again.",
+      "failed": "{name} could not be uploaded. Please try again."
+    }
+  },
+  "stage": {
+    "text_recognition": "Text recognition",
+    "classification": "Classification",
+    "extraction": "Extraction",
+    "validation": "Validation",
+    "summary": "Writing summary"
+  },
+  "inboxStatus": {
+    "queued": "Queued",
+    "failedAt": "Failed during {stage}",
+    "failed": "Failed",
+    "retry": "Retry",
+    "errors": {
+      "unreadable": "The file could not be read.",
+      "rate_limited": "The AI service is busy. Try again in a few minutes.",
+      "quota_exhausted": "The daily AI limit is reached. Try again later.",
+      "queue_unavailable": "Processing could not be started.",
+      "not_found": "The document no longer exists.",
+      "unknown": "Something went wrong."
+    }
   }
 }

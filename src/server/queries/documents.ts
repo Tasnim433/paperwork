@@ -5,10 +5,13 @@ import { and, count, desc, eq, ilike, inArray, ne, or, sql } from "drizzle-orm";
 import { db } from "../db";
 import { documentType, documents, extractedFields, tasks, type DocumentType } from "../db/schema";
 
-const inboxStatuses = ["received", "processing", "needs_review"] as const;
+const inboxStatuses = ["received", "processing", "needs_review", "failed"] as const;
+
+/** Statuses during which the inbox keeps refreshing. */
+export const activeStatuses = ["received", "processing"] as const;
 const recordStatuses = ["confirmed", "information_only"] as const;
 
-/** Documents that are new or waiting for review, newest first. */
+/** Documents that are new, processing, failed or waiting for review, newest first. */
 export async function listInbox(userId: string) {
   const flagged = db
     .select({ documentId: extractedFields.documentId, count: count().as("flagged_count") })
@@ -21,8 +24,11 @@ export async function listInbox(userId: string) {
     .select({
       id: documents.id,
       status: documents.status,
+      processingStage: documents.processingStage,
+      errorCode: documents.errorMessage,
       type: documents.type,
       sender: documents.sender,
+      originalFileName: documents.originalFileName,
       receivedDate: documents.receivedDate,
       flaggedCount: sql<number>`coalesce(${flagged.count}, 0)`.mapWith(Number),
     })
