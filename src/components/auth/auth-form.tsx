@@ -7,6 +7,7 @@ import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { authClient } from "@/lib/auth-client";
 
 type Mode = "signIn" | "signUp";
@@ -80,10 +81,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
         htmlFor="password"
         hint={mode === "signUp" ? t("passwordHint") : undefined}
       >
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete={mode === "signUp" ? "new-password" : "current-password"}
           minLength={8}
           required

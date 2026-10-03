@@ -101,7 +101,9 @@
       "invalidEmail": "Enter a valid email address.",
       "tooManyRequests": "Too many attempts. Try again in a moment.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "common": {
     "noDate": "No date",

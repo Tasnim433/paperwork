@@ -143,6 +143,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Hide the browser's own reveal/clear icons (Edge); PasswordInput has its own toggle. */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
   html {
     @apply font-sans;
   }

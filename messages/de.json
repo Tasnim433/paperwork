@@ -101,7 +101,9 @@
       "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
       "tooManyRequests": "Zu viele Versuche. Versuche es gleich noch einmal.",
       "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
-    }
+    },
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen"
   },
   "common": {
     "noDate": "Kein Datum",
