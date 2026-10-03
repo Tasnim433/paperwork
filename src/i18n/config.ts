@@ -9,6 +9,15 @@ export function isLocale(value: unknown): value is Locale {
   return typeof value === "string" && (locales as readonly string[]).includes(value);
 }
 
+/** Reads the locale cookie from a raw Cookie header. */
+export function localeFromCookieHeader(header: string | null | undefined): Locale | undefined {
+  const value = header
+    ?.split(";")
+    .map((part) => part.trim().split("="))
+    .find(([name]) => name === localeCookieName)?.[1];
+  return isLocale(value) ? value : undefined;
+}
+
 /** Picks the best supported locale from an Accept-Language header. */
 export function matchAcceptLanguage(header: string | null): Locale | undefined {
   if (!header) return undefined;
