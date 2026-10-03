@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "appName": "Paperwork",
+    "description": "Paperwork manager for students in Germany: letters, deadlines, tasks and work days."
+  },
+  "nav": {
+    "label": "Main navigation",
+    "overview": "Overview",
+    "inbox": "Inbox",
+    "review": "Review",
+    "tasks": "Tasks",
+    "records": "Records",
+    "workDays": "Work days",
+    "settings": "Settings",
+    "help": "Help",
+    "signOut": "Sign out",
+    "openMenu": "Open menu"
+  },
+  "topbar": {
+    "workspace": "Workspace",
+    "breadcrumb": "Breadcrumb",
+    "searchPlaceholder": "Search documents, tasks, references",
+    "searchLabel": "Search",
+    "upload": "Upload",
+    "account": "Account"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "label": "Language",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "pages": {
+    "placeholder": "This page will be built in a later step.",
+    "overview": {
+      "title": "Overview",
+      "description": "Deadlines, tasks and documents at a glance."
+    },
+    "inbox": {
+      "title": "Inbox",
+      "description": "New documents. Nothing is acted on until you confirm it."
+    },
+    "review": {
+      "title": "Review",
+      "description": "Compare the extracted data with the original document."
+    },
+    "tasks": {
+      "title": "Tasks",
+      "description": "Created from confirmed documents by fixed rules."
+    },
+    "records": {
+      "title": "Records",
+      "description": "Confirmed documents. Originals are stored unchanged."
+    },
+    "workDays": {
+      "title": "Work days",
+      "description": "Calculated from confirmed payslips."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Reminders, data and history."
+    },
+    "help": {
+      "title": "Help",
+      "description": "Answers to common questions."
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This page does not exist or has been moved.",
+    "back": "Back to overview"
+  }
+}

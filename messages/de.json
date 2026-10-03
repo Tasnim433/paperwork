@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "appName": "Paperwork",
+    "description": "Papierkram-Manager für Studierende in Deutschland: Briefe, Fristen, Aufgaben und Arbeitstage."
+  },
+  "nav": {
+    "label": "Hauptnavigation",
+    "overview": "Übersicht",
+    "inbox": "Posteingang",
+    "review": "Prüfen",
+    "tasks": "Aufgaben",
+    "records": "Unterlagen",
+    "workDays": "Arbeitstage",
+    "settings": "Einstellungen",
+    "help": "Hilfe",
+    "signOut": "Abmelden",
+    "openMenu": "Menü öffnen"
+  },
+  "topbar": {
+    "workspace": "Arbeitsbereich",
+    "breadcrumb": "Brotkrumennavigation",
+    "searchPlaceholder": "Dokumente, Aufgaben, Referenzen suchen",
+    "searchLabel": "Suche",
+    "upload": "Hochladen",
+    "account": "Konto"
+  },
+  "theme": {
+    "label": "Darstellung",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
+  "language": {
+    "label": "Sprache",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "pages": {
+    "placeholder": "Diese Seite wird in einem späteren Schritt gebaut.",
+    "overview": {
+      "title": "Übersicht",
+      "description": "Fristen, Aufgaben und Dokumente auf einen Blick."
+    },
+    "inbox": {
+      "title": "Posteingang",
+      "description": "Neue Dokumente. Nichts passiert, bevor du es bestätigst."
+    },
+    "review": {
+      "title": "Prüfen",
+      "description": "Vergleiche die erkannten Daten mit dem Originaldokument."
+    },
+    "tasks": {
+      "title": "Aufgaben",
+      "description": "Nach festen Regeln aus bestätigten Dokumenten erstellt."
+    },
+    "records": {
+      "title": "Unterlagen",
+      "description": "Bestätigte Dokumente. Originale werden unverändert gespeichert."
+    },
+    "workDays": {
+      "title": "Arbeitstage",
+      "description": "Berechnet aus bestätigten Lohnabrechnungen."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "description": "Erinnerungen, Daten und Verlauf."
+    },
+    "help": {
+      "title": "Hilfe",
+      "description": "Antworten auf häufige Fragen."
+    }
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Diese Seite gibt es nicht oder sie wurde verschoben.",
+    "back": "Zurück zur Übersicht"
+  }
+}

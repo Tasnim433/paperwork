@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paperwork Autopilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --side:#fafafa; --panel:#ffffff; --ink:#0c0d0e; --ink2:#45484d; --muted:#83878e; --line:#e8e8e6; --line2:#f3f3f2;
+  --accent:#0d5c50; --accent-ink:#ffffff; --accent-soft:#eaf2f0;
+  --green:#178048; --amber:#a86400; --red:#c0362c; --grey:#a3a7ad;
+  --page:#ffffff; --pagebg:#f4f4f3; --hl:rgba(13,92,80,.12); --hl-line:#0d5c50;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0c0d0e; --side:#111214; --panel:#0c0d0e; --ink:#ededec; --ink2:#bdbfc3; --muted:#878a90; --line:#24262a; --line2:#17181b;
+    --accent:#5fc2ae; --accent-ink:#06201b; --accent-soft:#12302a;
+    --green:#56c68a; --amber:#e8a445; --red:#ef7066; --grey:#5c6066;
+    --page:#f6f6f4; --pagebg:#151619; --hl:rgba(13,92,80,.16); --hl-line:#0d5c50;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Geist",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+button{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+
+aside{background:var(--side);border-right:1px solid var(--line);padding:18px 12px 14px;display:flex;flex-direction:column;gap:1px;position:sticky;top:0;height:100vh}
+.mark{display:flex;align-items:center;gap:10px;padding:2px 10px 22px;font-weight:600;font-size:15px;letter-spacing:-.01em}
+.mark i{width:22px;height:22px;border-radius:6px;background:var(--ink);display:block;position:relative}
+.mark i::after{content:"P";position:absolute;inset:0;display:grid;place-items:center;color:var(--bg);font-style:normal;font-size:13px;font-weight:600}
+.mark small{display:none}
+.nav{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;color:var(--ink2);font-size:14px}
+.nav svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;color:var(--muted)}
+.nav:hover{background:var(--line2);color:var(--ink)}
+.nav.active{background:var(--line);color:var(--ink);font-weight:500}
+.nav.active svg{color:var(--ink)}
+.nav .n{margin-left:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nav .n:empty{display:none}
+.nav-sep{height:1px;background:var(--line);margin:10px 10px}
+.side-links{margin-top:auto;padding-top:8px}
+.side-links .nav{font-size:13px;color:var(--muted)}
+.user{display:none}
+
+main{padding:0 48px 64px;min-width:0}
+.topbar{display:flex;align-items:center;gap:12px;height:60px;border-bottom:1px solid var(--line);margin:0 -48px 36px;padding:0 48px;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);z-index:5}
+.crumbtop{font-size:13px;color:var(--muted)}.crumbtop b{color:var(--ink);font-weight:500}
+.gsearch{margin-left:auto;width:300px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--muted);background:var(--bg)}
+.gsearch:focus-within{border-color:var(--ink2)}
+.gsearch input{all:unset;flex:1;color:var(--ink);font-size:13px}
+.gsearch svg,.ibtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ibtn{all:unset;cursor:pointer;width:32px;height:32px;display:grid;place-items:center;border-radius:8px;color:var(--ink2);position:relative}
+.ibtn:hover{background:var(--line2)}
+.ibtn .dot{position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--line);color:var(--ink);display:grid;place-items:center;font-size:11.5px;font-weight:600}
+.who{display:none}
+
+.wrap{max-width:1080px;margin:0 auto}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:32px}
+h1{font-size:28px;font-weight:600;letter-spacing:-.03em;margin:0;line-height:1.2}
+.sub{color:var(--muted);margin-top:6px;font-size:14.5px}
+.sub b{color:var(--ink);font-weight:500}
+h2{font-size:15px;font-weight:600;letter-spacing:-.01em;margin:0 0 12px;color:var(--ink)}
+.view{display:none}.view.active{display:block}
+
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 13px;border:1px solid var(--line);border-radius:7px;background:var(--bg);font-weight:500;font-size:13px;white-space:nowrap;transition:background .1s,border-color .1s}
+.btn:hover{background:var(--line2)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.primary:hover{background:var(--ink2);border-color:var(--ink2)}
+.btn[disabled]{opacity:.35;cursor:not-allowed;pointer-events:none}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink2)}
+.btn.ghost:hover{background:var(--line2)}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.btn.danger{color:var(--red)}
+.btn.danger:hover{background:color-mix(in srgb,var(--red) 7%,transparent)}
+.btn.danger.armed{background:var(--red);color:#fff;border-color:var(--red)}
+kbd{font-family:"Geist Mono",ui-monospace,Menlo,monospace;font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--ink2)}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:44px}
+.metric{padding:18px 0 18px 20px;border-left:1px solid var(--line)}
+.metric:first-child{border-left:none;padding-left:0}
+.metric .k{font-size:13px;color:var(--muted)}
+.metric .v{font-size:30px;font-weight:500;letter-spacing:-.03em;margin-top:4px;font-variant-numeric:tabular-nums}
+.metric .v small{font-size:15px;color:var(--muted);font-weight:400}
+.metric.red .v{color:var(--red)}
+.meter{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin:10px 20px 0 0}
+.meter div{height:100%;background:var(--accent)}
+
+.block{margin-bottom:44px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:12.5px;font-weight:400;color:var(--muted);padding:0 12px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:14px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl th:first-child,.tbl td:first-child{padding-left:0}
+.tbl th:last-child,.tbl td:last-child{padding-right:0}
+.tbl tr.click{cursor:pointer}
+.tbl tr.click:hover td{background:var(--line2)}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+td.num,th.num{text-align:right}
+.mono{font-family:"Geist Mono",ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+.muted{color:var(--muted)}
+.empty{padding:32px 0;color:var(--muted);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+.st{--c:var(--grey);display:inline-flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap;color:var(--ink2)}
+.st::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c);flex:none}
+.st.green{--c:var(--green)}
+.st.amber{--c:var(--amber)}
+.st.red{--c:var(--red);color:var(--red)}
+.st.blue{--c:var(--accent)}
+.st.pulse::before{animation:p 1s infinite alternate}
+@keyframes p{to{opacity:.2}}
+
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.seg{display:inline-flex;gap:2px;padding:2px;background:var(--line2);border-radius:8px}
+.seg button{all:unset;cursor:pointer;padding:5px 12px;font-size:13px;color:var(--ink2);border-radius:6px}
+.seg button.on{background:var(--bg);color:var(--ink);font-weight:500;box-shadow:0 0 0 1px var(--line)}
+.search{border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--bg);color:var(--ink);font:inherit;font-size:13px;min-width:260px;outline:none}
+.search:focus{border-color:var(--ink2)}
+.spacer{flex:1}
+
+.drop{border:1px dashed var(--grey);border-radius:10px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;margin-bottom:36px}
+.drop .t{font-weight:500;font-size:15px}
+
+.rv-top{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.crumb{color:var(--muted)}
+.crumb b{color:var(--ink);font-weight:500}
+.prog{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.prog .track{width:110px;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+.prog .track div{height:100%;background:var(--accent);transition:width .2s}
+.rv{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:28px;align-items:start}
+.viewer{background:var(--pagebg);border-radius:10px;overflow:hidden;position:sticky;top:80px}
+.vbar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line)}
+.vbar .grp{display:flex;gap:2px;align-items:center}
+.pagewrap{padding:28px;max-height:calc(100vh - 170px);overflow:auto}
+.page{background:var(--page);color:#1b1c1f;padding:44px 48px;box-shadow:0 1px 2px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);font-size:12.5px;line-height:1.65;transform-origin:top center;transition:transform .15s;max-width:560px;margin:0 auto;font-family:"Geist",system-ui,sans-serif}
+.page .lh{display:flex;justify-content:space-between;font-size:10.5px;color:#6b6e74;border-bottom:1px solid #e0e0de;padding-bottom:8px;margin-bottom:26px}
+.page h4{font-size:13px;margin:16px 0 10px}
+.page table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
+.page td{padding:4px 0;border-bottom:1px solid #eee}
+.src{border-radius:2px;transition:background .12s,box-shadow .12s;cursor:pointer}
+.src.on{background:var(--hl);box-shadow:0 0 0 1.5px var(--hl-line)}
+
+.panel{border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.sec{padding:18px 20px;border-top:1px solid var(--line)}
+.sec:first-child{border-top:none}
+.sec-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sec-h h3{font-size:14px;font-weight:600;margin:0;color:var(--ink)}
+.sec-h h3 span{color:var(--muted);font-weight:400;margin-right:8px;font-variant-numeric:tabular-nums}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font-size:13px}
+.meta dt{color:var(--muted)}.meta dd{margin:0}
+select.inp,input.inp{font:inherit;font-size:13.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 10px;outline:none;width:100%}
+select.inp:focus,input.inp:focus{border-color:var(--ink);box-shadow:0 0 0 3px var(--line2)}
+.fld{display:grid;grid-template-columns:120px 1fr 72px;gap:12px;align-items:center;padding:6px 0}
+.fld label{font-size:13px;color:var(--ink2)}
+.fld .rule{grid-column:2 / 4;font-size:12px;color:var(--amber);margin-top:-2px}
+.fld.check input.inp{border-color:var(--amber)}
+.fld.missing input.inp{border-color:var(--red)}
+.fld .st{justify-self:end}
+.checks{list-style:none;margin:0;padding:0}
+.checks li{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:13px}
+.creates{list-style:none;margin:0;padding:0}
+.creates li{display:grid;grid-template-columns:72px 1fr auto;gap:10px;padding:7px 0;font-size:13px;border-bottom:1px solid var(--line2)}
+.creates li:last-child{border-bottom:none}
+.tag{font-size:12.5px;color:var(--muted)}
+.gen{font-size:13.5px;color:var(--ink2)}
+.gen-l{font-size:12px;color:var(--muted);margin-bottom:6px}
+.foot{display:flex;gap:8px;align-items:center;padding:16px 20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.hint{font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
+
+.wd-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:40px}
+.chart{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;align-items:end;height:160px;padding-top:10px;border-bottom:1px solid var(--line)}
+.col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:6px}
+.stack{width:100%;max-width:22px;display:flex;flex-direction:column-reverse}
+.stack .f{background:var(--accent);border-radius:0}
+.stack .h{background:color-mix(in srgb,var(--accent) 30%,var(--bg))}
+.stack div:last-child{border-radius:3px 3px 0 0}
+.col .l{font-size:11.5px;color:var(--muted);margin-bottom:-24px}
+.col .c{font-size:11.5px;color:var(--ink2);font-variant-numeric:tabular-nums;min-height:16px}
+.legend{display:flex;gap:18px;font-size:12.5px;color:var(--muted);margin-top:32px}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:7px}
+.legend .lf::before{background:var(--accent)}
+.legend .lh::before{background:color-mix(in srgb,var(--accent) 30%,var(--bg))}
+.rulebox{font-size:13px;color:var(--muted);margin-top:24px;max-width:560px}
+
+.kv{border-top:1px solid var(--line)}
+.kv .r{display:grid;grid-template-columns:220px 1fr auto;gap:20px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.kv .r .k{color:var(--ink);font-weight:500}
+.kv .r .d{color:var(--muted)}
+.danger-zone .r .k{color:var(--ink)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,90px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:13px;transition:transform .25s;z-index:20}
+.toast.show{transform:translate(-50%,0)}
+.note{font-size:12px;color:var(--muted);margin-top:24px}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:8px 10px;border-right:none;border-bottom:1px solid var(--line)}
+  .mark{padding:0 8px 0 4px}.nav-sep,.side-links{display:none}
+  .nav .n{margin-left:6px}
+  main{padding:0 16px 48px}
+  .topbar{margin:0 -16px 24px;padding:0 16px}
+  .crumbtop{display:none}.gsearch{width:auto;flex:1}
+  .metrics{grid-template-columns:1fr 1fr}
+  .metric:nth-child(3){border-left:none;padding-left:0}
+  .metric:nth-child(n+3){border-top:1px solid var(--line)}
+  .rv,.wd-grid{grid-template-columns:1fr}
+  .viewer{position:static}
+  .fld{grid-template-columns:1fr auto}
+  .fld label,.fld .rule{grid-column:1 / 3}
+  .kv .r{grid-template-columns:1fr;gap:6px}
+  .tbl .hide-m{display:none}
+  .page{padding:26px 22px}
+  h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="mark"><i></i>Paperwork</div>
+    <button class="nav active" data-v="overview"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Overview</button>
+    <button class="nav" data-v="inbox"><svg viewBox="0 0 24 24"><path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5.5 5h13L21 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"/></svg>Inbox <span class="n" id="n-inbox"></span></button>
+    <button class="nav" data-v="tasks"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>Tasks <span class="n" id="n-tasks"></span></button>
+    <button class="nav" data-v="records"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/><path d="M10 13h4"/></svg>Records</button>
+    <div class="nav-sep"></div>
+    <button class="nav" data-v="work"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Work days</button>
+    <button class="nav" data-v="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
+    <div class="side-links">
+      <button class="nav"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 17h.01"/></svg>Help</button>
+      <button class="nav"><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>Sign out</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="crumbtop">Workspace / <b id="crumb">Overview</b></div>
+      <label class="gsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input placeholder="Search documents, tasks, references"></label>
+      <button class="btn primary sm" data-go="inbox">Upload</button>
+      <button class="ibtn" title="Notifications"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="dot"></span></button>
+      <div class="avatar">TA</div>
+      <div class="who"><b>Tasnim Amiri</b><span>Universität Passau</span></div>
+    </div>
+    <div class="wrap">
+    <!-- OVERVIEW -->
+    <section class="view active" id="v-overview">
+      <div class="head"><div><h1>Good morning, Tasnim</h1><div class="sub" id="ov-sum"></div></div></div>
+      <div class="metrics" id="metrics"></div>
+      <div class="block"><h2>Coming up</h2><div id="ov-tasks"></div></div>
+      <div class="block"><h2>Waiting for review</h2><div id="ov-inbox"></div></div>
+    </section>
+
+    <!-- INBOX -->
+    <section class="view" id="v-inbox">
+      <div class="head"><div><h1>Inbox</h1><div class="sub">New documents. Nothing is acted on until you confirm it.</div></div></div>
+      <div class="drop">
+        <div class="t">Drop a file here</div><div class="muted">PDF, JPG or PNG, up to 20 MB. You can also forward letters to <span class="mono">tasnim@in.paperwork.app</span></div>
+        <button class="btn" id="upload">Choose file</button>
+      </div>
+      <div id="inbox-list"></div>
+    </section>
+
+    <!-- REVIEW -->
+    <section class="view" id="v-review">
+      <div class="rv-top">
+        <button class="btn ghost sm" data-go="inbox">Back</button>
+        <div class="crumb">Inbox / <b id="rv-title"></b></div>
+        <div class="spacer"></div>
+        <div class="prog"><span id="rv-prog"></span><div class="track"><div id="rv-bar"></div></div></div>
+        <button class="btn sm" id="rv-prev" title="Previous (K)">Previous</button>
+        <button class="btn sm" id="rv-next" title="Next (J)">Next</button>
+      </div>
+      <div class="rv">
+        <div class="viewer">
+          <div class="vbar"><span id="rv-file"></span>
+            <div class="grp"><button class="btn ghost sm" id="zo">−</button><span id="zv">100%</span><button class="btn ghost sm" id="zi">+</button><span style="margin-left:10px">Page 1 of 1</span></div></div>
+          <div class="pagewrap"><div class="page" id="rv-page"></div></div>
+        </div>
+        <div>
+          <div class="panel" id="rv-panel"></div>
+          <div class="hint"><span><kbd>Tab</kbd> next field</span><span><kbd>Enter</kbd> accept field</span><span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> confirm document</span><span><kbd>J</kbd>/<kbd>K</kbd> next / previous</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TASKS -->
+    <section class="view" id="v-tasks">
+      <div class="head"><div><h1>Tasks</h1><div class="sub">Created from confirmed documents by fixed rules.</div></div></div>
+      <div class="bar"><div class="seg" id="task-seg"><button class="on" data-f="open">Open</button><button data-f="done">Completed</button><button data-f="all">All</button></div></div>
+      <div id="task-list"></div>
+    </section>
+
+    <!-- RECORDS -->
+    <section class="view" id="v-records">
+      <div class="head"><div><h1>Records</h1><div class="sub">Confirmed documents. Originals are stored unchanged.</div></div></div>
+      <div class="bar">
+        <input class="search" id="rec-q" placeholder="Search sender, type or reference">
+        <div class="seg" id="rec-seg"><button class="on" data-f="all">All types</button><button data-f="Invoice">Invoice</button><button data-f="Appointment">Appointment</button><button data-f="Contract">Contract</button><button data-f="Payslip">Payslip</button></div>
+      </div>
+      <div id="rec-list"></div>
+    </section>
+
+    <!-- WORK DAYS -->
+    <section class="view" id="v-work">
+      <div class="head"><div><h1>Work days</h1><div class="sub">Calendar year 2026 · calculated from confirmed payslips</div></div></div>
+      <div class="metrics" id="wd-metrics"></div>
+      <div class="wd-grid">
+        <div class="block">
+          <h2>Per month</h2>
+          <div class="panel" style="padding:16px 18px">
+            <div class="chart" id="wd-chart"></div>
+            <div class="legend"><span class="lf">Full days</span><span class="lh">Half days</span></div>
+          </div>
+          <div class="rulebox">A day with more than 4 hours of work counts as a full day; up to 4 hours counts as a half day. Two half days equal one full day. Limit for non-EU students: 140 full days per calendar year. Separate limit during lecture periods: 20 hours per week.</div>
+        </div>
+        <div class="block">
+          <h2>Sources</h2>
+          <div id="wd-src"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="v-settings">
+      <div class="head"><div><h1>Settings</h1><div class="sub">Reminders, data and history.</div></div></div>
+      <div class="block"><h2>Reminders</h2>
+        <div class="kv">
+          <div class="r"><span class="k">Reminder schedule</span><span>7, 3 and 1 days before a deadline</span><button class="btn sm">Edit</button></div>
+          <div class="r"><span class="k">Overdue notice</span><span>Daily, until resolved</span><button class="btn sm">Edit</button></div>
+          <div class="r"><span class="k">Delivery</span><span>Email · tassnimamiri08@gmail.com</span><button class="btn sm">Edit</button></div>
+        </div></div>
+      <div class="block"><h2>Delete data</h2>
+        <div class="kv danger-zone">
+          <div class="r"><span class="k">Delete all documents</span><span class="d">Removes every document, record, task and history entry. Your account and settings stay active.</span><button class="btn sm danger" data-del="All documents and history deleted">Delete documents</button></div>
+          <div class="r"><span class="k">Delete account</span><span class="d">Closes your account and removes all data, including settings. This cannot be undone.</span><button class="btn sm danger" data-del="Account deletion requested">Delete account</button></div>
+        </div></div>
+      <div class="block"><h2>History log</h2><div id="log"></div></div>
+    </section>
+
+    <div class="note">Mockup · all names, numbers and documents are fictional.</div>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- data ---------- */
+const TODAY = new Date(2026,9,3);
+const fmt = d => d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+const D = (y,m,d)=>new Date(y,m-1,d);
+const eur = n => "€"+n.toFixed(2);
+
+const docs = [
+ { id:"D-0142", file:"scan_2026-10-02.pdf", sender:"Musterkasse", received:D(2026,10,2), type:"Invoice", status:"review",
+   summary:"This is the invoice for your student health and long-term care insurance for the winter semester. Payment is mandatory. Use your insurance number as the payment reference.",
+   fields:[
+    {k:"sender",l:"Sender",v:"Musterkasse Krankenversicherung"},
+    {k:"date",l:"Letter date",v:"29 Sep 2026"},
+    {k:"period",l:"Period",v:"1 Oct 2026 – 31 Mar 2027"},
+    {k:"amount",l:"Amount",v:"132.48",re:/^\d+\.\d{2}$/,hint:"Format: 0.00"},
+    {k:"due",l:"Due date",v:"15 Nov 2026"},
+    {k:"ref",l:"Reference",v:"X1234S6789",re:/^[A-Z]\d{9}$/,hint:"Expected: one letter followed by 9 digits"}
+   ],
+   creates:f=>[["Pay",`Pay ${eur(+f.amount)} to Musterkasse`,"15 Nov 2026"],["Remind","Reminders","8, 12, 14 Nov"]],
+   page:`<div class="lh"><span>Musterkasse Krankenversicherung · Musterstraße 1 · 94032 Passau</span><span>Seite 1/1</span></div>
+     <p>Frau<br>Tasnim Amiri<br>Innstraße 00<br>94032 Passau</p>
+     <p style="text-align:right">Passau, <span class="src" data-k="date">29.09.2026</span></p>
+     <h4>Beitragsrechnung Wintersemester 2026/27</h4>
+     <p>Versichertennummer: <span class="src" data-k="ref">X1234S6789</span></p>
+     <p>Sehr geehrte Frau Amiri,</p>
+     <p>für Ihre studentische Kranken- und Pflegeversicherung berechnen wir für den Zeitraum <span class="src" data-k="period">01.10.2026 bis 31.03.2027</span> folgenden Beitrag:</p>
+     <table><tr><td>Krankenversicherung</td><td style="text-align:right">108,60 €</td></tr><tr><td>Pflegeversicherung</td><td style="text-align:right">23,88 €</td></tr><tr><td><b>Gesamtbetrag</b></td><td style="text-align:right"><b><span class="src" data-k="amount">132,48 €</span></b></td></tr></table>
+     <p>Bitte überweisen Sie den Gesamtbetrag bis zum <b><span class="src" data-k="due">15.11.2026</span></b> unter Angabe Ihrer Versichertennummer.</p>
+     <p>Mit freundlichen Grüßen<br><span class="src" data-k="sender">Musterkasse Krankenversicherung</span></p>`},
+ { id:"D-0143", file:"letter_photo.jpg", sender:"Stadt Musterstadt", received:D(2026,10,1), type:"Appointment", status:"review",
+   summary:"You have an appointment at the foreigners' office to extend your residence permit. Bring the three listed documents. If you cannot attend, you must cancel in advance.",
+   fields:[
+    {k:"sender",l:"Sender",v:"Stadt Musterstadt, Ausländerbehörde"},
+    {k:"date",l:"Appointment date",v:"22 Oct 2026"},
+    {k:"time",l:"Time",v:"09:3O",re:/^\d{2}:\d{2}$/,hint:"Expected format: HH:MM"},
+    {k:"room",l:"Location",v:"Room 2.14, Rathausplatz 2"},
+    {k:"bring",l:"Bring",v:"Passport, enrolment certificate, rental contract"},
+    {k:"case",l:"Case number",v:"",re:/^.{3,}$/,hint:"Not found automatically. Select it in the document."}
+   ],
+   creates:f=>[["Attend",`Attend appointment, ${f.room||""}`,`22 Oct 2026, ${f.time}`],["Prepare","Prepare 3 documents","21 Oct 2026"],["Remind","Reminders","15, 19, 21 Oct"]],
+   page:`<div class="lh"><span>Stadt Musterstadt · Ausländerbehörde · Rathausplatz 2</span><span>Seite 1/1</span></div>
+     <p>Frau<br>Tasnim Amiri<br>Innstraße 00<br>94032 Passau</p>
+     <p>Aktenzeichen: <span class="src" data-k="case">AB-2026-04417</span></p>
+     <h4>Terminbestätigung: Verlängerung Aufenthaltstitel</h4>
+     <p>Sehr geehrte Frau Amiri,</p>
+     <p>wir bestätigen Ihren Termin am <b><span class="src" data-k="date">22.10.2026</span></b> um <b><span class="src" data-k="time">09:3O Uhr</span></b>, <span class="src" data-k="room">Zimmer 2.14, Rathausplatz 2</span>.</p>
+     <p>Bitte bringen Sie folgende Unterlagen mit: <span class="src" data-k="bring">Reisepass, Immatrikulationsbescheinigung, Mietvertrag</span>.</p>
+     <p>Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte rechtzeitig ab.</p>
+     <p>Mit freundlichen Grüßen<br><span class="src" data-k="sender">Stadt Musterstadt, Ausländerbehörde</span></p>`}
+];
+const payslip = { id:"D-0144", file:"payslip_sep.pdf", sender:"Café Am Inn GmbH", received:TODAY, type:"Payslip", status:"processing",
+   summary:"Payslip for September. 64 hours on 14 days: 3 days over 4 hours (full days) and 11 days of 4 hours or less (half days). This adds 8.5 full-day equivalents to your yearly limit.",
+   fields:[
+    {k:"sender",l:"Employer",v:"Café Am Inn GmbH"},
+    {k:"period",l:"Period",v:"Sep 2026"},
+    {k:"hours",l:"Total hours",v:"64.0"},
+    {k:"full",l:"Days > 4h",v:"3",re:/^\d+$/},
+    {k:"half",l:"Days ≤ 4h",v:"11",re:/^\d+$/},
+    {k:"gross",l:"Gross pay",v:"833.00"}
+   ],
+   creates:f=>[["Update",`Work days: +${f.full} full, +${f.half} half`,"Sep 2026"]],
+   page:`<div class="lh"><span>Café Am Inn GmbH · Lohnabrechnung</span><span>Seite 1/1</span></div>
+     <p>Arbeitnehmerin: Tasnim Amiri<br>Abrechnungszeitraum: <span class="src" data-k="period">09/2026</span></p>
+     <table><tr><td>Arbeitgeber</td><td style="text-align:right"><span class="src" data-k="sender">Café Am Inn GmbH</span></td></tr>
+     <tr><td>Arbeitsstunden gesamt</td><td style="text-align:right"><span class="src" data-k="hours">64,0</span></td></tr>
+     <tr><td>Arbeitstage &gt; 4 Std.</td><td style="text-align:right"><span class="src" data-k="full">3</span></td></tr>
+     <tr><td>Arbeitstage ≤ 4 Std.</td><td style="text-align:right"><span class="src" data-k="half">11</span></td></tr>
+     <tr><td>Bruttoverdienst</td><td style="text-align:right"><span class="src" data-k="gross">833,00 €</span></td></tr></table>`};
+
+let tasks = [
+ {id:"T-31",kind:"Submit",title:"Submit enrolment certificate to Musterkasse",due:D(2026,10,1),src:"D-0137",done:false},
+ {id:"T-33",kind:"Pay",title:"Pay broadcasting fee €55.08",due:D(2026,10,15),src:"D-0138",done:false},
+ {id:"T-34",kind:"Pay",title:"Pay utility back-payment €86.20",due:D(2026,10,31),src:"D-0139",done:false},
+ {id:"T-28",kind:"Pay",title:"Pay semester fee €88.00",due:D(2026,9,15),src:"D-0131",done:true,doneOn:D(2026,9,12)}
+];
+let records = [
+ {id:"D-0140",date:D(2026,9,2),sender:"Café Am Inn GmbH",type:"Payslip",ref:"08/2026",tasks:0},
+ {id:"D-0139",date:D(2026,9,24),sender:"Hausverwaltung Muster",type:"Invoice",ref:"NK-2025-17",tasks:1},
+ {id:"D-0138",date:D(2026,9,28),sender:"Beitragsservice",type:"Invoice",ref:"482 113 907",tasks:1},
+ {id:"D-0137",date:D(2026,9,20),sender:"Musterkasse",type:"Request",ref:"X123456789",tasks:1},
+ {id:"D-0135",date:D(2026,4,1),sender:"Hausverwaltung Muster",type:"Contract",ref:"MV-0412",tasks:1},
+ {id:"D-0131",date:D(2026,9,10),sender:"Universität",type:"Invoice",ref:"WS26-88",tasks:1}
+];
+let months = [[2,1],[1,1],[0,2],[2,3],[2,3],[1,3],[2,2],[9,6],[0,0],[0,0],[0,0],[0,0]];
+let log = [
+ [new Date(2026,9,2,18,4),"System","Received","D-0142 via upload"],
+ [new Date(2026,9,2,18,4),"AI","Extracted 6 fields","D-0142 · 1 flagged"],
+ [new Date(2026,9,1,9,12),"AI","Extracted 6 fields","D-0143 · 2 flagged"],
+ [new Date(2026,9,1,7,0),"System","Marked overdue","T-31"],
+ [new Date(2026,8,28,20,40),"You","Confirmed document","D-0138 · created T-33"],
+ [new Date(2026,8,12,11,2),"You","Completed task","T-28 · paid 12 Sep"]
+];
+const addLog=(a,b,c)=>log.unshift([new Date(),a,b,c]);
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const days=d=>Math.round((d-TODAY)/864e5);
+function dueLabel(t){
+  if(t.done) return `<span class="st green">Done ${fmt(t.doneOn||TODAY)}</span>`;
+  const n=days(t.due);
+  if(n<0) return `<span class="st red">Overdue ${-n} ${-n===1?"day":"days"}</span>`;
+  if(n<=7) return `<span class="st amber">In ${n} days</span>`;
+  return `<span class="st">In ${n} days</span>`;
+}
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),2600)}
+function fieldState(f){ if(f.v.trim()==="") return "missing"; if(f.re && !f.re.test(f.v.trim())) return "check"; return "valid"; }
+const reviewQueue=()=>docs.filter(d=>d.status==="review");
+
+/* ---------- navigation ---------- */
+let view="overview";
+function go(v){
+  view=v;
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id==="v-"+v));
+  document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.v===(v==="review"?"inbox":v)));
+  render(); window.scrollTo(0,0);
+}
+const NAMES={overview:"Overview",inbox:"Inbox",review:"Review",tasks:"Tasks",records:"Records",work:"Work days",settings:"Settings"};
+document.querySelectorAll(".nav[data-v]").forEach(b=>b.onclick=()=>go(b.dataset.v));
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]"); if(g){go(g.dataset.go);return}
+  const o=e.target.closest("[data-open]"); if(o){openReview(o.dataset.open)}
+  const del=e.target.closest("[data-del]");
+  if(del){
+    if(!del.classList.contains("armed")){del.classList.add("armed");del._t=del.textContent;del.textContent="Click again to confirm";setTimeout(()=>{del.classList.remove("armed");del.textContent=del._t},4000);return}
+    del.classList.remove("armed");del.textContent=del._t;
+    if(del.dataset.del.startsWith("All")){docs.length=0;tasks=[];records=[];months=months.map(()=>[0,0]);log=[];addLog("You","Deleted all documents","Account kept")}
+    toast(del.dataset.del);render();return}
+  const dn=e.target.closest("[data-done]"); if(dn){const t=tasks.find(x=>x.id===dn.dataset.done);t.done=true;t.doneOn=TODAY;addLog("You","Completed task",t.id);toast(`${t.id} marked as done`);render()}
+});
+
+/* ---------- renderers ---------- */
+function taskTable(list,showAction=true){
+  if(!list.length) return `<div class="empty">No tasks.</div>`;
+  return `<table class="tbl"><thead><tr><th>Task</th><th class="hide-m">Type</th><th>Due</th><th>Status</th><th class="hide-m">Source</th>${showAction?"<th></th>":""}</tr></thead><tbody>${
+    list.map(t=>`<tr><td>${esc(t.title)}</td><td class="hide-m muted">${t.kind}</td><td>${fmt(t.due)}</td><td>${dueLabel(t)}</td><td class="hide-m mono">${t.src}</td>${showAction?`<td class="num">${t.done?"":`<button class="btn sm" data-done="${t.id}">Mark done</button>`}</td>`:""}</tr>`).join("")
+  }</tbody></table>`;
+}
+function inboxTable(list){
+  if(!list.length) return `<div class="empty">Inbox is empty. Everything has been reviewed.</div>`;
+  return `<table class="tbl"><thead><tr><th>Received</th><th>Sender</th><th>Detected type</th><th>Status</th><th></th></tr></thead><tbody>${
+   list.map(d=>{
+    let st;
+    if(d.status==="processing") st=`<span class="st blue pulse">${d.stage||"Processing"}</span>`;
+    else{const n=d.fields.filter(f=>fieldState(f)!=="valid").length; st=n?`<span class="st amber">${n} ${n===1?"field":"fields"} to check</span>`:`<span class="st green">Ready to confirm</span>`}
+    return `<tr class="${d.status==="review"?"click":""}" ${d.status==="review"?`data-open="${d.id}"`:""}><td>${fmt(d.received)}</td><td>${esc(d.sender)}</td><td>${d.status==="processing"?'<span class="muted">—</span>':d.type}</td><td>${st}</td><td class="num">${d.status==="review"?'<button class="btn sm">Review</button>':""}</td></tr>`}).join("")
+  }</tbody></table>`;
+}
+function render(){
+  $("#crumb").textContent=NAMES[view]||"";
+  const open=tasks.filter(t=>!t.done).sort((a,b)=>a.due-b.due);
+  const inbox=docs.filter(d=>d.status==="review"||d.status==="processing");
+  $("#n-inbox").textContent=inbox.length||"";
+  $("#n-tasks").textContent=open.length||"";
+
+  if(view==="overview"){
+    const overdue=open.filter(t=>days(t.due)<0).length, week=open.filter(t=>days(t.due)>=0&&days(t.due)<=7).length;
+    $("#metrics").innerHTML=[["Open tasks",open.length,""],["Overdue",overdue,overdue?"red":""],["Due in 7 days",week,""],["To review",reviewQueue().length,""]]
+      .map(([k,v,c])=>`<div class="metric ${c}"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+    const parts=[];
+    if(overdue) parts.push(`<b>${overdue} overdue ${overdue===1?"task":"tasks"}</b>`);
+    if(reviewQueue().length) parts.push(`<b>${reviewQueue().length} ${reviewQueue().length===1?"document":"documents"}</b> to review`);
+    $("#ov-sum").innerHTML=parts.length?`You have ${parts.join(" and ")}.`:"You're all caught up.";
+    $("#ov-tasks").innerHTML=taskTable(open.slice(0,5));
+    $("#ov-inbox").innerHTML=inboxTable(inbox);
+  }
+  if(view==="inbox") $("#inbox-list").innerHTML=inboxTable(inbox);
+  if(view==="tasks"){
+    const f=document.querySelector("#task-seg .on").dataset.f;
+    const list=tasks.filter(t=>f==="all"||(f==="open"?!t.done:t.done)).sort((a,b)=>a.due-b.due);
+    $("#task-list").innerHTML=taskTable(list);
+  }
+  if(view==="records"){
+    const f=document.querySelector("#rec-seg .on").dataset.f, q=$("#rec-q").value.toLowerCase();
+    const list=records.filter(r=>(f==="all"||r.type===f)&&(!q||(r.sender+r.type+r.ref+r.id).toLowerCase().includes(q))).sort((a,b)=>b.date-a.date);
+    $("#rec-list").innerHTML=list.length?`<table class="tbl"><thead><tr><th>ID</th><th>Date</th><th>Sender</th><th>Type</th><th class="hide-m">Reference</th><th class="num">Tasks</th></tr></thead><tbody>${
+      list.map(r=>`<tr class="click"><td class="mono">${r.id}</td><td>${fmt(r.date)}</td><td>${esc(r.sender)}</td><td>${r.type}</td><td class="hide-m mono">${esc(r.ref)}</td><td class="num">${r.tasks}</td></tr>`).join("")}</tbody></table>`
+      :`<div class="empty">No records match.</div>`;
+  }
+  if(view==="work"){
+    const full=months.reduce((s,m)=>s+m[0],0), half=months.reduce((s,m)=>s+m[1],0), used=full+half/2;
+    $("#wd-metrics").innerHTML=`
+      <div class="metric"><div class="k">Full days</div><div class="v">${full}</div></div>
+      <div class="metric"><div class="k">Half days</div><div class="v">${half}</div></div>
+      <div class="metric"><div class="k">Used</div><div class="v">${used} <small>/ 140</small></div><div class="meter"><div style="width:${used/140*100}%"></div></div></div>
+      <div class="metric"><div class="k">Remaining</div><div class="v">${140-used}</div></div>`;
+    const L=["J","F","M","A","M","J","J","A","S","O","N","D"];
+    $("#wd-chart").innerHTML=months.map(([f,h],i)=>{const tot=f+h/2;return `<div class="col"><div class="c">${tot||""}</div><div class="stack"><div class="f" style="height:${f*9}px"></div><div class="h" style="height:${h/2*9}px"></div></div><div class="l">${L[i]}</div></div>`}).join("");
+    const src=[["Payslip Aug 2026","D-0140","9 full · 6 half"],["Payslip Jul 2026","D-0127","2 full · 2 half"],["Payslip Jun 2026","D-0119","1 full · 3 half"]];
+    if(months[8][0]) src.unshift(["Payslip Sep 2026","D-0144","3 full · 11 half"]);
+    $("#wd-src").innerHTML=`<table class="tbl"><tbody>${src.map(s=>`<tr><td>${s[0]}<div class="muted mono">${s[1]}</div></td><td class="num">${s[2]}</td></tr>`).join("")}</tbody></table>
+      ${payslip.status!=="confirmed"?`<p class="muted" style="margin-top:12px">September is missing. Upload the payslip to complete the year.</p>`:""}`;
+  }
+  if(view==="settings"){
+    $("#log").innerHTML=`<table class="tbl"><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Object</th></tr></thead><tbody>${
+      log.map(l=>`<tr><td class="mono">${l[0].toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</td><td>${l[1]}</td><td>${esc(l[2])}</td><td class="muted">${esc(l[3])}</td></tr>`).join("")}</tbody></table>`;
+  }
+}
+document.querySelectorAll(".seg").forEach(s=>s.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;s.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");render()}));
+$("#rec-q").oninput=render;
+
+/* ---------- upload simulation ---------- */
+$("#upload").onclick=()=>{
+  if(docs.includes(payslip)){toast("Demo document already added");return}
+  docs.push(payslip); addLog("System","Received","D-0144 via upload"); render();
+  const stages=["Text recognition","Classification","Extraction","Validation"];
+  stages.forEach((s,i)=>setTimeout(()=>{payslip.stage=s;render()},i*800));
+  setTimeout(()=>{payslip.status="review";payslip.type="Payslip";addLog("AI","Extracted 6 fields","D-0144 · 0 flagged");render();toast("Payslip ready for review")},stages.length*800);
+};
+
+/* ---------- review ---------- */
+let cur=null, zoom=1;
+function openReview(id){cur=docs.find(d=>d.id===id); zoom=1; view="review"; $("#crumb").textContent="Inbox / Review";
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id==="v-review"));
+  document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.v==="inbox"));
+  renderReview(true); window.scrollTo(0,0);}
+function renderReview(focusFirst){
+  const d=cur, f=Object.fromEntries(d.fields.map(x=>[x.k,x.v]));
+  const states=d.fields.map(fieldState), ok=states.filter(s=>s==="valid").length, all=d.fields.length;
+  $("#rv-title").textContent=`${d.sender} · ${d.type}`;
+  $("#rv-file").textContent=`${d.id} · ${d.file}`;
+  $("#rv-prog").textContent=`${ok} of ${all} fields valid`;
+  $("#rv-bar").style.width=(ok/all*100)+"%";
+  const q=reviewQueue(), i=q.indexOf(d);
+  $("#rv-prev").disabled=i<=0; $("#rv-next").disabled=i<0||i>=q.length-1;
+  $("#rv-page").innerHTML=d.page; $("#rv-page").style.transform=`scale(${zoom})`; $("#zv").textContent=Math.round(zoom*100)+"%";
+
+  const lbl={valid:'<span class="st green">Valid</span>',check:'<span class="st amber">Check</span>',missing:'<span class="st red">Missing</span>'};
+  const checks=[
+    ["Required fields present", !states.includes("missing")],
+    ["Formats valid (dates, amounts, references)", !states.includes("check")],
+    ["Deadline after letter date", true],
+    ["No duplicate document found", true]
+  ];
+  const allOk=checks.every(c=>c[1]);
+  $("#rv-panel").innerHTML=`
+    <div class="sec">
+      <dl class="meta"><dt>Sender</dt><dd>${esc(d.sender)}</dd><dt>Received</dt><dd>${fmt(d.received)}</dd><dt>Document</dt><dd class="mono">${d.id}</dd></dl>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h3><span>1</span>Document type</h3><span class="st green">Valid</span></div>
+      <select class="inp" id="rv-type">${["Invoice","Appointment","Decision letter","Contract","Payslip","Information only","Other"].map(t=>`<option ${t===d.type?"selected":""}>${t}</option>`).join("")}</select>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h3><span>2</span>Fields</h3><span class="muted" style="font-size:12px">${all-ok?`${all-ok} to resolve`:"All valid"}</span></div>
+      ${d.fields.map((x,j)=>{const s=states[j];return `<div class="fld ${s}" data-k="${x.k}">
+        <label for="f-${x.k}">${x.l}</label>
+        <input class="inp" id="f-${x.k}" data-i="${j}" value="${esc(x.v)}" placeholder="${s==="missing"?"Select in document or type":""}">
+        ${lbl[s]}
+        ${s!=="valid"&&x.hint?`<div class="rule">${x.hint}</div>`:""}
+      </div>`}).join("")}
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h3><span>3</span>Checks</h3></div>
+      <ul class="checks">${checks.map(c=>`<li><span>${c[0]}</span>${c[1]?'<span class="st green">Passed</span>':'<span class="st red">Failed</span>'}</li>`).join("")}</ul>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h3><span>4</span>On confirmation this creates</h3></div>
+      <ul class="creates">${d.creates(f).map(c=>`<li><span class="tag">${c[0]}</span><span>${esc(c[1])}</span><span class="muted">${c[2]}</span></li>`).join("")}</ul>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h3><span>5</span>Summary</h3></div>
+      <div class="gen-l">Generated from the document · may contain errors</div>
+      <div class="gen">${esc(d.summary)}</div>
+    </div>
+    <div class="foot">
+      <button class="btn primary" id="rv-confirm" ${allOk?"":"disabled"}>Confirm document</button>
+      <button class="btn" id="rv-draft">Save draft</button>
+      <div class="spacer"></div>
+      <button class="btn ghost" id="rv-info">Information only</button>
+      <button class="btn ghost" id="rv-re">Reprocess</button>
+    </div>`;
+
+  // field <-> document linking
+  let active=null;
+  const hl=k=>document.querySelectorAll("#rv-page .src").forEach(s=>s.classList.toggle("on",s.dataset.k===k));
+  document.querySelectorAll("#rv-panel .fld").forEach(el=>{
+    const inp=el.querySelector("input"), k=el.dataset.k;
+    el.onmouseenter=()=>hl(k); el.onmouseleave=()=>hl(active);
+    inp.onfocus=()=>{active=k;hl(k)};
+    inp.oninput=()=>{d.fields[+inp.dataset.i].v=inp.value; d._edited=d._edited||{}; d._edited[k]=1;};
+    inp.onchange=()=>{const pos=inp.selectionStart;renderReview();const n=$("#f-"+k);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}};
+    inp.onkeydown=e=>{
+      if(e.key==="Enter"&&!(e.ctrlKey||e.metaKey)){e.preventDefault();inp.dispatchEvent(new Event("change"));
+        const nxt=d.fields.findIndex(x=>fieldState(x)!=="valid"); if(nxt>=0) $("#f-"+d.fields[nxt].k).focus();}
+    };
+  });
+  document.querySelectorAll("#rv-page .src").forEach(s=>s.onclick=()=>{
+    const fld=d.fields.find(x=>x.k===s.dataset.k); if(!fld) return;
+    if(fieldState(fld)==="missing"){fld.v=s.textContent.trim();renderReview();}
+    $("#f-"+s.dataset.k)?.focus();
+  });
+  $("#rv-type").onchange=e=>{d.type=e.target.value;renderReview()};
+  $("#rv-confirm").onclick=confirmDoc;
+  $("#rv-draft").onclick=()=>toast("Draft saved");
+  $("#rv-info").onclick=()=>{d.status="info";records.push({id:d.id,date:d.received,sender:d.sender,type:"Information",ref:"—",tasks:0});addLog("You","Filed as information only",d.id);afterDone("Filed as information only. No tasks created.")};
+  $("#rv-re").onclick=()=>toast("Reprocessing requested");
+
+  if(focusFirst){const n=d.fields.findIndex(x=>fieldState(x)!=="valid"); if(n>=0) setTimeout(()=>$("#f-"+d.fields[n].k).focus(),50);}
+}
+function confirmDoc(){
+  const d=cur, f=Object.fromEntries(d.fields.map(x=>[x.k,x.v]));
+  if(d.fields.some(x=>fieldState(x)!=="valid")) return;
+  d.status="confirmed";
+  const edited=Object.keys(d._edited||{});
+  if(edited.length) addLog("You","Corrected "+edited.join(", "),d.id);
+  let created=[];
+  if(d.id==="D-0142"){created.push({id:"T-35",kind:"Pay",title:`Pay ${eur(+f.amount)} to Musterkasse`,due:D(2026,11,15),src:d.id,done:false});}
+  if(d.id==="D-0143"){created.push({id:"T-36",kind:"Attend",title:`Appointment, foreigners' office, ${f.time}`,due:D(2026,10,22),src:d.id,done:false},{id:"T-37",kind:"Prepare",title:"Prepare passport, enrolment certificate, rental contract",due:D(2026,10,21),src:d.id,done:false});}
+  if(d.id==="D-0144"){months[8]=[+f.full,+f.half];}
+  tasks.push(...created);
+  records.push({id:d.id,date:d.received,sender:d.sender,type:d.type,ref:f.ref||f.case||f.period||"—",tasks:created.length});
+  addLog("You","Confirmed document",`${d.id}${created.length?" · created "+created.map(t=>t.id).join(", "):""}`);
+  afterDone(d.id==="D-0144"?"Confirmed. Work days updated.":`Confirmed. ${created.length} ${created.length===1?"task":"tasks"} created.`);
+}
+function afterDone(msg){
+  toast(msg);
+  const q=reviewQueue();
+  if(q.length) openReview(q[0].id); else go("inbox");
+}
+$("#rv-prev").onclick=()=>{const q=reviewQueue(),i=q.indexOf(cur);if(i>0)openReview(q[i-1].id)};
+$("#rv-next").onclick=()=>{const q=reviewQueue(),i=q.indexOf(cur);if(i<q.length-1)openReview(q[i+1].id)};
+$("#zi").onclick=()=>{zoom=Math.min(1.4,zoom+.1);$("#rv-page").style.transform=`scale(${zoom})`;$("#zv").textContent=Math.round(zoom*100)+"%"};
+$("#zo").onclick=()=>{zoom=Math.max(.7,zoom-.1);$("#rv-page").style.transform=`scale(${zoom})`;$("#zv").textContent=Math.round(zoom*100)+"%"};
+
+document.addEventListener("keydown",e=>{
+  if(view!=="review") return;
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();document.activeElement?.dispatchEvent?.(new Event("change"));setTimeout(()=>{if(!$("#rv-confirm").disabled)confirmDoc()},0);return}
+  if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName)) return;
+  if(e.key==="j") $("#rv-next").click();
+  if(e.key==="k") $("#rv-prev").click();
+});
+
+render();
+</script>
+</body>
+</html>
