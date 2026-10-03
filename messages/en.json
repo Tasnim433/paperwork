@@ -74,5 +74,129 @@
     "title": "Page not found",
     "description": "This page does not exist or has been moved.",
     "back": "Back to overview"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "passwordHint": "At least 8 characters.",
+    "signIn": {
+      "title": "Sign in",
+      "description": "Welcome back. Sign in to your paperwork.",
+      "submit": "Sign in",
+      "switchPrompt": "No account yet?",
+      "switchLink": "Create an account"
+    },
+    "signUp": {
+      "title": "Create an account",
+      "description": "Keep track of letters, deadlines and work days.",
+      "submit": "Create account",
+      "switchPrompt": "Already have an account?",
+      "switchLink": "Sign in"
+    },
+    "errors": {
+      "invalidCredentials": "Email or password is incorrect.",
+      "userExists": "An account with this email already exists.",
+      "passwordTooShort": "The password must be at least 8 characters.",
+      "invalidEmail": "Enter a valid email address.",
+      "tooManyRequests": "Too many attempts. Try again in a moment.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "common": {
+    "noDate": "No date",
+    "unknownSender": "Unknown sender"
+  },
+  "documentType": {
+    "invoice": "Invoice",
+    "appointment": "Appointment",
+    "decision_letter": "Decision letter",
+    "contract": "Contract",
+    "payslip": "Payslip",
+    "information_only": "Information only",
+    "other": "Other",
+    "unknown": "Not detected yet"
+  },
+  "taskKind": {
+    "pay": "Pay",
+    "attend": "Attend",
+    "submit": "Submit",
+    "prepare": "Prepare",
+    "respond": "Respond"
+  },
+  "due": {
+    "done": "Done {date}",
+    "none": "No deadline",
+    "overdue": "Overdue {days, plural, one {# day} other {# days}}",
+    "today": "Due today",
+    "inDays": "In {days, plural, one {# day} other {# days}}"
+  },
+  "overview": {
+    "greeting": {
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "evening": "Good evening, {name}"
+    },
+    "summary": {
+      "overdueAndReview": "You have <b>{overdue, plural, one {# overdue task} other {# overdue tasks}}</b> and <b>{toReview, plural, one {# document} other {# documents}}</b> to review.",
+      "overdue": "You have <b>{overdue, plural, one {# overdue task} other {# overdue tasks}}</b>.",
+      "review": "You have <b>{toReview, plural, one {# document} other {# documents}}</b> to review.",
+      "caughtUp": "You're all caught up."
+    },
+    "metrics": {
+      "open": "Open tasks",
+      "overdue": "Overdue",
+      "dueThisWeek": "Due in 7 days",
+      "toReview": "To review"
+    },
+    "comingUp": "Coming up",
+    "waitingForReview": "Waiting for review"
+  },
+  "tasks": {
+    "filter": {
+      "label": "Filter tasks",
+      "open": "Open",
+      "done": "Completed",
+      "all": "All"
+    },
+    "columns": {
+      "task": "Task",
+      "type": "Type",
+      "due": "Due",
+      "status": "Status",
+      "source": "Source"
+    },
+    "markDone": "Mark done",
+    "empty": "No tasks."
+  },
+  "records": {
+    "searchPlaceholder": "Search sender or reference",
+    "searchLabel": "Search records",
+    "filterLabel": "Filter by type",
+    "allTypes": "All types",
+    "columns": {
+      "date": "Date",
+      "sender": "Sender",
+      "type": "Type",
+      "reference": "Reference",
+      "tasks": "Tasks"
+    },
+    "empty": "No records match."
+  },
+  "inbox": {
+    "columns": {
+      "received": "Received",
+      "sender": "Sender",
+      "type": "Detected type",
+      "status": "Status"
+    },
+    "status": {
+      "received": "Received",
+      "processing": "Processing",
+      "fieldsToCheck": "{count, plural, one {# field} other {# fields}} to check",
+      "ready": "Ready to confirm"
+    },
+    "review": "Review",
+    "empty": "Inbox is empty. Everything has been reviewed."
   }
 }

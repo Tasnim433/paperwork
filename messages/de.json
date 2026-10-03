@@ -74,5 +74,129 @@
     "title": "Seite nicht gefunden",
     "description": "Diese Seite gibt es nicht oder sie wurde verschoben.",
     "back": "Zurück zur Übersicht"
+  },
+  "auth": {
+    "email": "E-Mail",
+    "password": "Passwort",
+    "name": "Name",
+    "passwordHint": "Mindestens 8 Zeichen.",
+    "signIn": {
+      "title": "Anmelden",
+      "description": "Willkommen zurück. Melde dich an, um deine Unterlagen zu sehen.",
+      "submit": "Anmelden",
+      "switchPrompt": "Noch kein Konto?",
+      "switchLink": "Konto erstellen"
+    },
+    "signUp": {
+      "title": "Konto erstellen",
+      "description": "Behalte Briefe, Fristen und Arbeitstage im Blick.",
+      "submit": "Konto erstellen",
+      "switchPrompt": "Schon ein Konto?",
+      "switchLink": "Anmelden"
+    },
+    "errors": {
+      "invalidCredentials": "E-Mail oder Passwort ist falsch.",
+      "userExists": "Mit dieser E-Mail gibt es bereits ein Konto.",
+      "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+      "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
+      "tooManyRequests": "Zu viele Versuche. Versuche es gleich noch einmal.",
+      "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    }
+  },
+  "common": {
+    "noDate": "Kein Datum",
+    "unknownSender": "Unbekannter Absender"
+  },
+  "documentType": {
+    "invoice": "Rechnung",
+    "appointment": "Termin",
+    "decision_letter": "Bescheid",
+    "contract": "Vertrag",
+    "payslip": "Lohnabrechnung",
+    "information_only": "Nur zur Information",
+    "other": "Sonstiges",
+    "unknown": "Noch nicht erkannt"
+  },
+  "taskKind": {
+    "pay": "Zahlen",
+    "attend": "Termin",
+    "submit": "Einreichen",
+    "prepare": "Vorbereiten",
+    "respond": "Antworten"
+  },
+  "due": {
+    "done": "Erledigt {date}",
+    "none": "Keine Frist",
+    "overdue": "{days, plural, one {# Tag} other {# Tage}} überfällig",
+    "today": "Heute fällig",
+    "inDays": "In {days, plural, one {# Tag} other {# Tagen}}"
+  },
+  "overview": {
+    "greeting": {
+      "morning": "Guten Morgen, {name}",
+      "afternoon": "Guten Tag, {name}",
+      "evening": "Guten Abend, {name}"
+    },
+    "summary": {
+      "overdueAndReview": "Du hast <b>{overdue, plural, one {# überfällige Aufgabe} other {# überfällige Aufgaben}}</b> und <b>{toReview, plural, one {# Dokument} other {# Dokumente}}</b> zu prüfen.",
+      "overdue": "Du hast <b>{overdue, plural, one {# überfällige Aufgabe} other {# überfällige Aufgaben}}</b>.",
+      "review": "Du hast <b>{toReview, plural, one {# Dokument} other {# Dokumente}}</b> zu prüfen.",
+      "caughtUp": "Alles erledigt."
+    },
+    "metrics": {
+      "open": "Offene Aufgaben",
+      "overdue": "Überfällig",
+      "dueThisWeek": "Fällig in 7 Tagen",
+      "toReview": "Zu prüfen"
+    },
+    "comingUp": "Als Nächstes",
+    "waitingForReview": "Warten auf Prüfung"
+  },
+  "tasks": {
+    "filter": {
+      "label": "Aufgaben filtern",
+      "open": "Offen",
+      "done": "Erledigt",
+      "all": "Alle"
+    },
+    "columns": {
+      "task": "Aufgabe",
+      "type": "Art",
+      "due": "Fällig",
+      "status": "Status",
+      "source": "Quelle"
+    },
+    "markDone": "Erledigt",
+    "empty": "Keine Aufgaben."
+  },
+  "records": {
+    "searchPlaceholder": "Absender oder Referenz suchen",
+    "searchLabel": "Unterlagen durchsuchen",
+    "filterLabel": "Nach Art filtern",
+    "allTypes": "Alle Arten",
+    "columns": {
+      "date": "Datum",
+      "sender": "Absender",
+      "type": "Art",
+      "reference": "Referenz",
+      "tasks": "Aufgaben"
+    },
+    "empty": "Keine passenden Unterlagen."
+  },
+  "inbox": {
+    "columns": {
+      "received": "Eingegangen",
+      "sender": "Absender",
+      "type": "Erkannte Art",
+      "status": "Status"
+    },
+    "status": {
+      "received": "Eingegangen",
+      "processing": "Wird verarbeitet",
+      "fieldsToCheck": "{count, plural, one {# Feld} other {# Felder}} zu prüfen",
+      "ready": "Bereit zur Bestätigung"
+    },
+    "review": "Prüfen",
+    "empty": "Der Posteingang ist leer. Alles ist geprüft."
   }
 }

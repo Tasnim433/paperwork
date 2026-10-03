@@ -4,13 +4,14 @@ import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { initials } from "@/lib/initials";
 
 import { Breadcrumb } from "./breadcrumb";
 import { LanguageSwitch } from "./language-switch";
 import { MobileNav } from "./mobile-nav";
 import { ThemeSwitch } from "./theme-switch";
 
-export function Topbar() {
+export function Topbar({ user }: { user: { name: string; email: string } }) {
   const t = useTranslations("topbar");
 
   return (
@@ -31,9 +32,10 @@ export function Topbar() {
       </Button>
       <ThemeSwitch />
       <LanguageSwitch />
-      <Avatar className="size-[30px]" aria-label={t("account")}>
-        <AvatarFallback className="bg-border text-foreground">
-          <User className="size-4" strokeWidth={1.7} aria-hidden />
+      <Avatar className="size-[30px]" title={`${user.name} · ${user.email}`}>
+        <AvatarFallback className="bg-border text-[11.5px] font-semibold text-foreground">
+          {initials(user.name) || <User className="size-4" strokeWidth={1.7} aria-hidden />}
+          <span className="sr-only">{t("account")}</span>
         </AvatarFallback>
       </Avatar>
     </header>

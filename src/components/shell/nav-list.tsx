@@ -1,6 +1,5 @@
 "use client";
 
-import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -8,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 import { footerNav, isActive, primaryNav, secondaryNav, type NavItem } from "./nav-items";
+import { SignOutButton } from "./sign-out-button";
 
 const itemClass =
   "flex items-center gap-2.5 rounded-md px-2.5 py-[7px] text-sm text-sidebar-foreground transition-colors hover:bg-line-2 hover:text-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground";
@@ -50,11 +50,7 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
         {footerNav.map((item) => (
           <NavLink key={item.key} item={item} onNavigate={onNavigate} />
         ))}
-        {/* Inert until authentication exists. */}
-        <button type="button" className={cn(itemClass, "text-[13px] text-muted-foreground")}>
-          <LogOut strokeWidth={1.6} aria-hidden />
-          {t("signOut")}
-        </button>
+        <SignOutButton className={cn(itemClass, "text-[13px] text-muted-foreground")} />
       </div>
     </nav>
   );
