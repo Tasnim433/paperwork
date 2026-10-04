@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { FilterTabs } from "@/components/data/filter-tabs";
@@ -67,7 +68,14 @@ export default async function RecordsPage({ searchParams }: PageProps<"/records"
                 <Td className="whitespace-nowrap tabular-nums">
                   {formatDate(record.receivedDate, locale)}
                 </Td>
-                <Td>{record.sender ?? t("common.unknownSender")}</Td>
+                <Td>
+                  <Link
+                    href={`/records/${record.id}`}
+                    className="underline-offset-4 hover:underline"
+                  >
+                    {record.sender ?? t("common.unknownSender")}
+                  </Link>
+                </Td>
                 <Td>{t(`documentType.${record.type ?? "unknown"}`)}</Td>
                 <Td className={`${desktopOnly} font-mono text-xs text-muted-foreground`}>
                   {record.reference ?? "—"}

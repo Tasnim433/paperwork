@@ -24,6 +24,9 @@ export async function listTasks(userId: string, filter: TaskFilter, limit?: numb
       status: tasks.status,
       completedAt: tasks.completedAt,
       sender: documents.sender,
+      documentId: tasks.documentId,
+      documentStatus: documents.status,
+      completionNote: tasks.completionNote,
     })
     .from(tasks)
     .leftJoin(documents, eq(documents.id, tasks.documentId))

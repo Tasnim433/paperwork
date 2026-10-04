@@ -16,6 +16,8 @@ export const tasks = pgTable(
     amountCents: integer(),
     status: taskStatus().notNull().default("open"),
     completedAt: timestamp({ withTimezone: true }),
+    /** Optional note the user adds when marking the task done. */
+    completionNote: text(),
     ...timestamps,
   },
   (t) => [index().on(t.userId, t.status, t.dueDate), index().on(t.documentId)],
