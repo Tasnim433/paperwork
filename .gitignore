@@ -43,3 +43,7 @@ next-env.d.ts
 
 # local uploads and OCR data
 /.data/
+
+# Local agent instructions (not part of the repository)
+CLAUDE.md
+AGENTS.md

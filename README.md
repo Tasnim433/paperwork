@@ -148,4 +148,4 @@ src/server/         Server only: db, auth, storage, ai, pipeline, inngest, queri
 src/proxy.ts        Redirects page requests without a session cookie to sign-in
 ```
 
-Deployment: see [DEPLOYMENT.md](DEPLOYMENT.md). Design rules and conventions: [CLAUDE.md](CLAUDE.md).
+Deployment: see [DEPLOYMENT.md](DEPLOYMENT.md). Architecture, design rules and conventions: [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
