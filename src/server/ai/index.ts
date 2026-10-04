@@ -1,7 +1,8 @@
 /**
  * The only module that knows about AI providers. The pipeline calls
  * classifyDocument / extractFields / summarizeDocument and never imports a
- * provider directly. Switch with AI_PROVIDER=google|anthropic (and AI_MODEL).
+ * provider directly. Switch with AI_PROVIDER=google|anthropic|mock (and AI_MODEL).
+ * "mock" returns fixed results for the fixture letters and needs no API key.
  */
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -11,12 +12,14 @@ import { z } from "zod";
 import { documentFields, documentTypes, type DocumentTypeKey } from "@/lib/schemas/document-fields";
 
 import { env } from "../env";
+import * as mock from "./mock";
 import { classifyBusy, type ProviderBusy } from "./retry";
 
 const defaultModels = {
   // Google's stable alias for the current Flash model (free tier).
   google: "gemini-flash-latest",
   anthropic: "claude-opus-5-5",
+  mock: "fixtures",
 } as const;
 
 /**
@@ -82,6 +85,7 @@ const classificationSchema = z.object({
 export type Classification = z.infer<typeof classificationSchema>;
 
 export async function classifyDocument(text: string): Promise<Classification> {
+  if (env.AI_PROVIDER === "mock") return mock.classify(text);
   const { output } = await generateText({
     model: model(),
     maxRetries: SDK_RETRIES,
@@ -122,6 +126,7 @@ export async function extractFields(
   type: DocumentTypeKey,
   text: string,
 ): Promise<Record<string, ExtractedValue>> {
+  if (env.AI_PROVIDER === "mock") return mock.extract(type, text);
   const { output } = await generateText({
     model: model(),
     maxRetries: SDK_RETRIES,
@@ -157,6 +162,7 @@ export async function summarizeDocument(input: {
   text: string;
   fields: { key: string; value: string | null }[];
 }): Promise<string> {
+  if (env.AI_PROVIDER === "mock") return mock.summarize(input);
   const language = input.locale === "de" ? "German (informal 'du')" : "English";
   const known = input.fields
     .filter((field) => field.value)

@@ -6,7 +6,7 @@ import { and, asc, eq } from "drizzle-orm";
 
 import { defaultLocale, isLocale } from "@/i18n/config";
 import { pageTextFromWords } from "@/lib/text/pdf-words";
-import { locateSourceText } from "@/lib/text/locate";
+import { locateValue } from "@/lib/text/locate";
 import type { PageText } from "@/lib/text/types";
 import { documentFields, type DocumentTypeKey } from "@/lib/schemas/document-fields";
 import {
@@ -136,11 +136,7 @@ export async function extract(ref: Ref) {
 
   const rows = documentFields[type].map((definition) => {
     const extracted = values[definition.key];
-    const located =
-      extracted?.value && extracted.sourceText
-        ? (locateSourceText(pages, extracted.sourceText) ??
-          locateSourceText(pages, extracted.value))
-        : null;
+    const located = locateValue(pages, extracted);
     return {
       userId: doc.userId,
       documentId: doc.id,

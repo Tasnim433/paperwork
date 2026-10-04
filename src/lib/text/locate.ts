@@ -135,3 +135,18 @@ export function locateSourceText(pages: PageText[], sourceText: string): LocateR
     exact: false,
   };
 }
+
+/**
+ * Locates an extracted value: by its source text first, then by the value itself
+ * (models sometimes return a longer or slightly different source snippet).
+ */
+export function locateValue(
+  pages: PageText[],
+  extracted: { value: string | null; sourceText: string | null } | undefined,
+): LocateResult | null {
+  if (!extracted?.value) return null;
+  return (
+    (extracted.sourceText ? locateSourceText(pages, extracted.sourceText) : null) ??
+    locateSourceText(pages, extracted.value)
+  );
+}

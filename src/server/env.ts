@@ -30,7 +30,8 @@ const schema = z
     R2_BUCKET: optional,
 
     // AI provider for classification, extraction and summaries.
-    AI_PROVIDER: z.enum(["google", "anthropic"]).default("google"),
+    /** "mock" returns fixed results for fixtures/letters without any API call (tests, offline dev). */
+    AI_PROVIDER: z.enum(["google", "anthropic", "mock"]).default("google"),
     /** Overrides the provider's default model. */
     AI_MODEL: optional,
     GOOGLE_GENERATIVE_AI_API_KEY: optional,
@@ -55,8 +56,8 @@ const schema = z
       google: "GOOGLE_GENERATIVE_AI_API_KEY",
       anthropic: "ANTHROPIC_API_KEY",
     } as const;
-    const aiKey = keyByProvider[env.AI_PROVIDER];
-    if (!env[aiKey]) {
+    const aiKey = env.AI_PROVIDER === "mock" ? null : keyByProvider[env.AI_PROVIDER];
+    if (aiKey && !env[aiKey]) {
       ctx.addIssue({
         code: "custom",
         path: [aiKey],

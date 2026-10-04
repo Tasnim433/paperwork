@@ -146,6 +146,13 @@ async function ocrWorker(): Promise<Worker> {
   return workerPromise;
 }
 
+/** Stops the shared OCR worker (tests and scripts; the server keeps it running). */
+export async function terminateOcr() {
+  const pending = workerPromise;
+  workerPromise = undefined;
+  if (pending) await (await pending).terminate();
+}
+
 async function ocrImage(image: Uint8Array, pageNumber: number): Promise<PageText> {
   const worker = await ocrWorker();
   const { data } = await worker.recognize(Buffer.from(image), {}, { blocks: true });

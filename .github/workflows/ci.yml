@@ -12,12 +12,12 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    # Placeholders so env validation passes; CI never connects to a database.
+    # Placeholders so env validation passes; CI never connects to a database or an AI provider.
     env:
       DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
       BETTER_AUTH_SECRET: ci-placeholder-secret-not-used-anywhere-0000
       BETTER_AUTH_URL: http://localhost:3000
-      GOOGLE_GENERATIVE_AI_API_KEY: ci-placeholder
+      AI_PROVIDER: mock
     steps:
       - uses: actions/checkout@v4
 
@@ -38,6 +38,12 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      # OCR language data used by the fixture letter tests (downloaded on first use).
+      - uses: actions/cache@v4
+        with:
+          path: .data/tesseract
+          key: tesseract-deu-eng-v1
 
       - name: Test
         run: pnpm test
