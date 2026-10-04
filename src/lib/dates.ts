@@ -1,12 +1,14 @@
 import { timeZone } from "@/i18n/config";
 
+import { now as clockNow } from "./clock";
+
 /** A calendar date as stored in Postgres `date` columns: "YYYY-MM-DD". */
 export type IsoDate = string;
 
 const DAY_MS = 86_400_000;
 
 /** Today's calendar date in Germany. */
-export function todayIso(now: Date = new Date()): IsoDate {
+export function todayIso(now: Date = clockNow()): IsoDate {
   // en-CA formats as YYYY-MM-DD.
   return new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -53,7 +55,7 @@ export function dueStatus(
 export type TimeOfDay = "morning" | "afternoon" | "evening";
 
 /** Part of the day in Germany, for the greeting. */
-export function timeOfDay(now: Date = new Date()): TimeOfDay {
+export function timeOfDay(now: Date = clockNow()): TimeOfDay {
   const hour = Number(
     new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", hourCycle: "h23" }).format(now),
   );

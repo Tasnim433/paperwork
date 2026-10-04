@@ -2,6 +2,17 @@
 
 Paperwork helps students in Germany keep up with official letters. Upload a letter as a PDF or a photo; Paperwork reads it, proposes what matters (who sent it, how much, by when, what to do), lets you check every value against the original, and turns confirmed documents into tasks with reminders. For non-EU students it also tracks the yearly work-day limit (140 full or 280 half days) from payslips.
 
+## Screenshots
+
+![Review screen: the original letter on the left with the IBAN highlighted, the extracted fields on the right with the IBAN flagged because its checksum is wrong](docs/screenshots/review.png)
+
+|                                                                                                                        |                                                                                                               |
+| ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| ![Overview with greeting, key numbers, upcoming tasks and documents waiting for review](docs/screenshots/overview.png) | ![Inbox with one document in the extraction step and three waiting for review](docs/screenshots/inbox.png)    |
+| ![Tasks with an overdue task, upcoming tasks and a completed one](docs/screenshots/tasks.png)                          | ![Work days: monthly chart, used days of the yearly limit and payslip sources](docs/screenshots/workdays.png) |
+
+Also in [dark mode](docs/screenshots/review-dark.png) and [German](docs/screenshots/overview-de.png). All data is fictional.
+
 ## The problem
 
 Letters from health insurers, the foreigners' office, landlords, utilities, universities and employers arrive in formal German. Missing one can mean a late fee, a lapsed residence permit or exceeding the work limit tied to a student visa. The information is there, but it is spread over dense paper, deadlines are easy to misread, and nobody keeps the overview for you.
@@ -120,6 +131,15 @@ pnpm build
 - `src/server/pipeline/letters.test.ts` runs the seven fictional letters in `fixtures/letters/` through real text recognition (including OCR), the mock AI provider, source location, validation and task rules, and checks them against `fixtures/letters/EXPECTED_RESULTS.md`.
 - CI (`.github/workflows/ci.yml`) runs the same commands on every push with placeholder environment values.
 
+## Screenshots for this README
+
+```bash
+pnpm screenshots               # builds the app first
+pnpm screenshots --skip-build  # reuse the existing production build
+```
+
+The script (`scripts/screenshots.ts`) starts its own production server on port 3300 and an Inngest dev server on port 8688 with `AI_PROVIDER=mock` and a fixed date (4 October 2026, 09:30 German time), so the result is reproducible and independent of `pnpm dev`. It creates a dedicated demo user (`demo@paperwork.local`, random password) in the database from `.env.local`, uploads the letters from `fixtures/letters/`, confirms some of them in the Review screen, adds a few fictional rows (an overdue and a completed task, earlier work days, one document in the extraction step), and captures the pages at 1440×900 with device scale factor 2. Before saving, it checks that no email address, secret or local path is visible on the page; the PNGs are palette-optimized with sharp and written to `docs/screenshots/`. The demo user and its files are deleted afterwards. Playwright's Chromium is needed once: `pnpm exec playwright install chromium`.
+
 ## Scripts
 
 | Script                                                    | Purpose                                     |
@@ -133,6 +153,7 @@ pnpm build
 | `pnpm test` / `pnpm test:watch`                           | Vitest                                      |
 | `pnpm db:generate` / `pnpm db:migrate` / `pnpm db:studio` | Drizzle migrations and studio               |
 | `pnpm db:seed`                                            | Demo data for a user                        |
+| `pnpm screenshots`                                        | Regenerate the README screenshots           |
 
 ## Project structure
 
