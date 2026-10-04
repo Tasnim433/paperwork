@@ -434,5 +434,147 @@
     "nothingCreated": "No tasks or entries were created.",
     "taskDone": "Done",
     "openTasks": "Open Tasks"
+  },
+  "workDays": {
+    "title": "Work days",
+    "description": "Calendar year {year} · calculated from confirmed payslips",
+    "yearLabel": "Year",
+    "metrics": {
+      "full": "Full days",
+      "half": "Half days",
+      "used": "Used",
+      "remaining": "Remaining"
+    },
+    "meterText": "{used} of {limit} full days used ({percent} %)",
+    "perMonth": "Per month",
+    "sources": "Sources",
+    "noSources": "No confirmed payslips for {year} yet.",
+    "payslip": "Payslip {month}",
+    "sourceDays": "{full} full · {half} half",
+    "rule": "A day with more than 4 hours of work counts as a full day; up to 4 hours counts as a half day. Two half days equal one full day. Limit for non-EU students: 140 full days (or 280 half days) per calendar year. Separate limit during lecture periods: 20 hours per week.",
+    "warnings": {
+      "near": "{percent} % of your yearly limit used: {used} of {limit} full days.",
+      "nearHint": "Plan the remaining days carefully, and check with the foreigners' office before taking on more work.",
+      "limit": "You have reached the yearly limit of {limit} full days.",
+      "over": "You are {over} full days over the yearly limit of {limit}.",
+      "limitHint": "Further work this year may need permission from the foreigners' office and the employment agency."
+    },
+    "chart": {
+      "legendFull": "Full days",
+      "legendHalf": "Half days (counted as ½)",
+      "full": "{count, plural, one {# full day} other {# full days}}",
+      "half": "{count, plural, one {# half day} other {# half days}}",
+      "used": "{value} full-day equivalents",
+      "tableCaption": "Work days per month in {year}",
+      "month": "Month",
+      "usedColumn": "Full-day equivalents"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Reminders, data and history.",
+    "reminders": {
+      "title": "Reminders",
+      "schedule": "Reminder schedule",
+      "scheduleValue": "{count, plural, one {# day} other {{days} days}} before a deadline",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "hint": "Days before a deadline, separated by commas, e.g. 7, 3, 1 (up to 5 values, 1 to 60).",
+      "invalid": "Enter 1 to 5 whole numbers between 1 and 60, e.g. 7, 3, 1.",
+      "saved": "Reminder schedule saved.",
+      "delivery": "Delivery",
+      "deliveryValue": "Email · {email}",
+      "futureOnly": "Changes apply to tasks created from now on."
+    },
+    "delete": {
+      "title": "Delete data",
+      "typeToConfirm": "Type <code>{value}</code> to confirm.",
+      "cancel": "Cancel",
+      "mismatch": "The confirmation does not match.",
+      "failed": "Deleting failed. Please try again.",
+      "documents": {
+        "label": "Delete all documents",
+        "description": "Removes every document, record, task, work day entry and history entry. Your account and settings stay active.",
+        "button": "Delete documents",
+        "title": "Delete all documents?",
+        "warning": "All documents, originals, tasks, work days and the history log are deleted permanently. This cannot be undone.",
+        "confirm": "Delete all documents",
+        "done": "All documents and history deleted."
+      },
+      "account": {
+        "label": "Delete account",
+        "description": "Closes your account and removes all data, including settings. This cannot be undone.",
+        "button": "Delete account",
+        "title": "Delete your account?",
+        "warning": "Your account, all documents, originals, tasks, work days, settings and the history log are deleted permanently. You will be signed out.",
+        "confirm": "Delete account",
+        "done": "Your account has been deleted."
+      }
+    },
+    "history": {
+      "title": "History log",
+      "filterLabel": "Filter by actor",
+      "allActors": "All",
+      "empty": "No entries.",
+      "more": "Show more",
+      "columns": {
+        "time": "Time",
+        "actor": "Actor",
+        "action": "Action",
+        "object": "Object"
+      }
+    }
+  },
+  "audit": {
+    "actors": {
+      "user": "You",
+      "ai": "AI",
+      "system": "System"
+    },
+    "actions": {
+      "document": {
+        "uploaded": "Uploaded",
+        "received": "Received",
+        "text_recognized": "Recognized text",
+        "classified": "Classified",
+        "extracted": "Extracted fields",
+        "validated": "Validated fields",
+        "summarized": "Wrote summary",
+        "ready_for_review": "Ready for review",
+        "failed": "Processing failed",
+        "retry_requested": "Retried processing",
+        "reprocess_requested": "Reprocessed",
+        "draft_saved": "Saved draft",
+        "type_changed": "Changed document type",
+        "confirmed": "Confirmed document",
+        "filed_information_only": "Filed as information only"
+      },
+      "field": {
+        "corrected": "Corrected field",
+        "accepted": "Accepted field",
+        "removed": "Removed field"
+      },
+      "task": {
+        "created": "Created task",
+        "completed": "Completed task"
+      },
+      "work_entry": {
+        "created": "Added work days"
+      },
+      "settings": {
+        "reminders_changed": "Changed reminder schedule"
+      },
+      "documents": {
+        "deleted_all": "Deleted all documents"
+      }
+    },
+    "entity": {
+      "deletedDocument": "Deleted document",
+      "task": "Task",
+      "field": "Field",
+      "workEntry": "Work days {month}",
+      "settings": "Settings"
+    }
   }
 }

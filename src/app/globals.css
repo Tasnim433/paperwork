@@ -49,6 +49,7 @@
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-soft: var(--brand-soft);
+  --color-brand-tint: var(--brand-tint);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
@@ -86,6 +87,8 @@
   --brand: #0d5c50;
   --brand-foreground: #ffffff;
   --brand-soft: #eaf2f0;
+  /* Second step of the brand ramp for charts (validated against the surface). */
+  --brand-tint: #92b6b0;
   --success: #178048;
   --warning: #a86400;
   --danger: #c0362c;
@@ -125,6 +128,7 @@
   --brand: #5fc2ae;
   --brand-foreground: #06201b;
   --brand-soft: #12302a;
+  --brand-tint: #315e55;
   --success: #56c68a;
   --warning: #e8a445;
   --danger: #ef7066;

@@ -1,6 +1,12 @@
 import { cn } from "@/lib/utils";
 
-export type Metric = { label: string; value: number | string; tone?: "danger" };
+export type Metric = {
+  label: string;
+  value: number | string;
+  tone?: "danger";
+  /** Optional progress bar under the value (0 to 1), e.g. share of a yearly limit. */
+  meter?: { ratio: number; tone: "brand" | "warning" | "danger"; label: string };
+};
 
 /** Row of key numbers separated by thin rules; two columns on mobile. */
 export function Metrics({ items }: { items: Metric[] }) {
@@ -26,6 +32,27 @@ export function Metrics({ items }: { items: Metric[] }) {
           >
             {item.value}
           </dd>
+          {item.meter && (
+            <dd
+              role="meter"
+              aria-label={item.label}
+              aria-valuemin={0}
+              aria-valuemax={1}
+              aria-valuenow={Math.min(1, item.meter.ratio)}
+              aria-valuetext={item.meter.label}
+              className="mt-2.5 mr-5 h-[3px] overflow-hidden rounded-full bg-border"
+            >
+              <div
+                className={cn(
+                  "h-full",
+                  item.meter.tone === "danger" && "bg-danger",
+                  item.meter.tone === "warning" && "bg-warning",
+                  item.meter.tone === "brand" && "bg-brand",
+                )}
+                style={{ width: `${Math.min(100, Math.max(0, item.meter.ratio * 100))}%` }}
+              />
+            </dd>
+          )}
         </div>
       ))}
     </dl>

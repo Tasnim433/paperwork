@@ -434,5 +434,147 @@
     "nothingCreated": "Es wurden keine Aufgaben oder Einträge erstellt.",
     "taskDone": "Erledigt",
     "openTasks": "Zu den Aufgaben"
+  },
+  "workDays": {
+    "title": "Arbeitstage",
+    "description": "Kalenderjahr {year} · berechnet aus bestätigten Lohnabrechnungen",
+    "yearLabel": "Jahr",
+    "metrics": {
+      "full": "Ganze Tage",
+      "half": "Halbe Tage",
+      "used": "Verbraucht",
+      "remaining": "Verbleibend"
+    },
+    "meterText": "{used} von {limit} ganzen Tagen verbraucht ({percent} %)",
+    "perMonth": "Pro Monat",
+    "sources": "Quellen",
+    "noSources": "Noch keine bestätigten Lohnabrechnungen für {year}.",
+    "payslip": "Lohnabrechnung {month}",
+    "sourceDays": "{full} ganze · {half} halbe",
+    "rule": "Ein Tag mit mehr als 4 Stunden Arbeit zählt als ganzer Tag, bis zu 4 Stunden als halber Tag. Zwei halbe Tage ergeben einen ganzen. Grenze für Studierende aus Nicht-EU-Staaten: 140 ganze (oder 280 halbe) Tage pro Kalenderjahr. Zusätzlich gilt in der Vorlesungszeit eine Grenze von 20 Stunden pro Woche.",
+    "warnings": {
+      "near": "{percent} % deiner Jahresgrenze verbraucht: {used} von {limit} ganzen Tagen.",
+      "nearHint": "Plane die restlichen Tage sorgfältig und frag bei der Ausländerbehörde nach, bevor du mehr arbeitest.",
+      "limit": "Du hast die Jahresgrenze von {limit} ganzen Tagen erreicht.",
+      "over": "Du liegst {over} ganze Tage über der Jahresgrenze von {limit}.",
+      "limitHint": "Für weitere Arbeit in diesem Jahr kann eine Zustimmung der Ausländerbehörde und der Agentur für Arbeit nötig sein."
+    },
+    "chart": {
+      "legendFull": "Ganze Tage",
+      "legendHalf": "Halbe Tage (zählen ½)",
+      "full": "{count, plural, one {# ganzer Tag} other {# ganze Tage}}",
+      "half": "{count, plural, one {# halber Tag} other {# halbe Tage}}",
+      "used": "{value} Tage umgerechnet",
+      "tableCaption": "Arbeitstage pro Monat {year}",
+      "month": "Monat",
+      "usedColumn": "Umgerechnete ganze Tage"
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Erinnerungen, Daten und Verlauf.",
+    "reminders": {
+      "title": "Erinnerungen",
+      "schedule": "Erinnerungszeitpunkte",
+      "scheduleValue": "{count, plural, one {# Tag} other {{days} Tage}} vor einer Frist",
+      "edit": "Bearbeiten",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "hint": "Tage vor einer Frist, durch Kommas getrennt, z. B. 7, 3, 1 (bis zu 5 Werte, 1 bis 60).",
+      "invalid": "Gib 1 bis 5 ganze Zahlen zwischen 1 und 60 ein, z. B. 7, 3, 1.",
+      "saved": "Erinnerungen gespeichert.",
+      "delivery": "Zustellung",
+      "deliveryValue": "E-Mail · {email}",
+      "futureOnly": "Änderungen gelten für Aufgaben, die ab jetzt erstellt werden."
+    },
+    "delete": {
+      "title": "Daten löschen",
+      "typeToConfirm": "Gib <code>{value}</code> ein, um zu bestätigen.",
+      "cancel": "Abbrechen",
+      "mismatch": "Die Bestätigung stimmt nicht überein.",
+      "failed": "Löschen fehlgeschlagen. Bitte versuche es erneut.",
+      "documents": {
+        "label": "Alle Dokumente löschen",
+        "description": "Entfernt alle Dokumente, Unterlagen, Aufgaben, Arbeitstage und Verlaufseinträge. Dein Konto und deine Einstellungen bleiben bestehen.",
+        "button": "Dokumente löschen",
+        "title": "Alle Dokumente löschen?",
+        "warning": "Alle Dokumente, Originale, Aufgaben, Arbeitstage und der Verlauf werden endgültig gelöscht. Das kann nicht rückgängig gemacht werden.",
+        "confirm": "Alle Dokumente löschen",
+        "done": "Alle Dokumente und der Verlauf wurden gelöscht."
+      },
+      "account": {
+        "label": "Konto löschen",
+        "description": "Schließt dein Konto und entfernt alle Daten, auch die Einstellungen. Das kann nicht rückgängig gemacht werden.",
+        "button": "Konto löschen",
+        "title": "Dein Konto löschen?",
+        "warning": "Dein Konto, alle Dokumente, Originale, Aufgaben, Arbeitstage, Einstellungen und der Verlauf werden endgültig gelöscht. Du wirst abgemeldet.",
+        "confirm": "Konto löschen",
+        "done": "Dein Konto wurde gelöscht."
+      }
+    },
+    "history": {
+      "title": "Verlauf",
+      "filterLabel": "Nach Akteur filtern",
+      "allActors": "Alle",
+      "empty": "Keine Einträge.",
+      "more": "Mehr anzeigen",
+      "columns": {
+        "time": "Zeit",
+        "actor": "Akteur",
+        "action": "Aktion",
+        "object": "Objekt"
+      }
+    }
+  },
+  "audit": {
+    "actors": {
+      "user": "Du",
+      "ai": "KI",
+      "system": "System"
+    },
+    "actions": {
+      "document": {
+        "uploaded": "Hochgeladen",
+        "received": "Eingegangen",
+        "text_recognized": "Text erkannt",
+        "classified": "Klassifiziert",
+        "extracted": "Felder extrahiert",
+        "validated": "Felder geprüft",
+        "summarized": "Zusammenfassung erstellt",
+        "ready_for_review": "Bereit zur Prüfung",
+        "failed": "Verarbeitung fehlgeschlagen",
+        "retry_requested": "Verarbeitung erneut gestartet",
+        "reprocess_requested": "Neu verarbeitet",
+        "draft_saved": "Entwurf gespeichert",
+        "type_changed": "Dokumentart geändert",
+        "confirmed": "Dokument bestätigt",
+        "filed_information_only": "Als Information abgelegt"
+      },
+      "field": {
+        "corrected": "Feld korrigiert",
+        "accepted": "Feld übernommen",
+        "removed": "Feld entfernt"
+      },
+      "task": {
+        "created": "Aufgabe erstellt",
+        "completed": "Aufgabe erledigt"
+      },
+      "work_entry": {
+        "created": "Arbeitstage hinzugefügt"
+      },
+      "settings": {
+        "reminders_changed": "Erinnerungen geändert"
+      },
+      "documents": {
+        "deleted_all": "Alle Dokumente gelöscht"
+      }
+    },
+    "entity": {
+      "deletedDocument": "Gelöschtes Dokument",
+      "task": "Aufgabe",
+      "field": "Feld",
+      "workEntry": "Arbeitstage {month}",
+      "settings": "Einstellungen"
+    }
   }
 }
