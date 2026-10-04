@@ -12,14 +12,8 @@ import { useUpload } from "@/components/upload/upload-provider";
 import { isLocale, type Locale } from "@/i18n/config";
 import { todayIso } from "@/lib/dates";
 import { formatCurrency, formatDate } from "@/lib/format";
-import {
-  canConfirm,
-  displayValue,
-  documentChecks,
-  plannedActions,
-  validateReview,
-  type PlannedAction,
-} from "@/lib/review";
+import { canAccept, canConfirm, displayValue, documentChecks, validateReview } from "@/lib/review";
+import { tasksForDocument, type PlannedAction } from "@/lib/task-rules";
 import { documentFields, documentTypes, type DocumentTypeKey } from "@/lib/schemas/document-fields";
 import { parseAmountCents } from "@/lib/validation/parse";
 import type { FieldState } from "@/lib/validation/validate-document";
@@ -68,12 +62,14 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [reprocessArmed, setReprocessArmed] = useState(false);
+  /** Fields whose value the user accepted as it is (only "compare with the original" flags). */
+  const [accepted, setAccepted] = useState<string[]>([]);
   const inputs = useRef(new Map<string, HTMLInputElement>());
 
   const definitions = documentFields[type];
   const results = useMemo(
-    () => validateReview(type, stored, values, locale),
-    [type, stored, values, locale],
+    () => validateReview(type, stored, values, locale, accepted),
+    [type, stored, values, locale, accepted],
   );
   const resultByKey = useMemo(() => new Map(results.map((r) => [r.key, r])), [results]);
   const validCount = results.filter((r) => r.state === "valid").length;
@@ -81,11 +77,12 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
   const confirmable = canConfirm(results, duplicate);
   const actions = useMemo(
     () =>
-      plannedActions(type, results, {
+      tasksForDocument(type, results, {
         reminderOffsetDays: data.reminderOffsetDays,
         today: todayIso(),
+        textMentionsDirectDebit: data.textMentionsDirectDebit,
       }),
-    [type, results, data.reminderOffsetDays],
+    [type, results, data.reminderOffsetDays, data.textMentionsDirectDebit],
   );
   const labels = Object.fromEntries(
     definitions.map((d) => [d.key, t(`fields.${d.key}` as "fields.sender")]),
@@ -96,6 +93,7 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
     documentId: doc.id,
     type,
     values: Object.fromEntries(definitions.map((d) => [d.key, values[d.key] ?? ""])),
+    accepted,
   });
 
   const handleResult = useCallback(
@@ -136,7 +134,10 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
       true,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps -- input() reads current state
-  }, [confirmable, pending, run, t, type, values]);
+  }, [confirmable, pending, run, t, type, values, accepted]);
+
+  const accept = (key: string) =>
+    setAccepted((current) => (current.includes(key) ? current : [...current, key]));
 
   const focusField = (key: string) => {
     const element = inputs.current.get(key);
@@ -300,6 +301,7 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
                         onKeyDown={(event) => {
                           if (event.key === "Enter" && !(event.ctrlKey || event.metaKey)) {
                             event.preventDefault();
+                            if (canAccept(result?.rule)) accept(definition.key);
                             focusNextOpen(definition.key);
                           }
                         }}
@@ -322,11 +324,20 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
                         <p
                           id={hintId}
                           className={cn(
-                            "col-span-2 -mt-0.5 text-xs desktop:col-start-2 desktop:col-end-4",
+                            "col-span-2 -mt-0.5 flex flex-wrap items-baseline gap-x-2 text-xs desktop:col-start-2 desktop:col-end-4",
                             state === "missing" ? "text-danger" : "text-warning",
                           )}
                         >
                           {t(`review.rules.${result.rule}` as "review.rules.required")}
+                          {canAccept(result.rule) && (
+                            <button
+                              type="button"
+                              onClick={() => accept(definition.key)}
+                              className="font-medium text-foreground underline underline-offset-2 hover:no-underline"
+                            >
+                              {t("review.accept")}
+                            </button>
+                          )}
                         </p>
                       )}
                     </div>
@@ -514,6 +525,7 @@ function CreatesRows({ action, locale }: { action: PlannedAction; locale: Locale
   );
 
   if (action.kind === "record") return row(t("record"), t("recordText"), "");
+  if (action.kind === "note") return row(t("note"), t(`notes.${action.reason}`), "");
   if (action.kind === "workDays") {
     return row(
       t("workDays"),

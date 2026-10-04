@@ -3,10 +3,18 @@ import "server-only";
 import { and, asc, desc, eq, inArray, ne } from "drizzle-orm";
 
 import { isSameLetter, type StoredField } from "@/lib/review";
+import { textMentionsDirectDebit } from "@/lib/task-rules";
 import type { DocumentTypeKey } from "@/lib/schemas/document-fields";
 
 import { db } from "../db";
-import { documents, extractedFields, userSettings } from "../db/schema";
+import {
+  documentPages,
+  documents,
+  extractedFields,
+  tasks,
+  userSettings,
+  workEntries,
+} from "../db/schema";
 
 /** IDs of documents waiting for review, in Inbox order (newest first). */
 export async function reviewQueue(userId: string): Promise<string[]> {
@@ -63,6 +71,15 @@ export async function findDuplicate(
   );
 }
 
+/** Whether the recognized text of the document mentions direct debit (see task rules). */
+export async function documentMentionsDirectDebit(documentId: string): Promise<boolean> {
+  const pages = await db
+    .select({ text: documentPages.text })
+    .from(documentPages)
+    .where(eq(documentPages.documentId, documentId));
+  return pages.some((page) => textMentionsDirectDebit(page.text));
+}
+
 export async function reminderOffsets(userId: string): Promise<number[]> {
   const settings = await db.query.userSettings.findFirst({
     where: eq(userSettings.userId, userId),
@@ -78,7 +95,7 @@ export async function getReviewDocument(userId: string, documentId: string) {
   });
   if (!doc) return null;
 
-  const [fieldRows, queue, offsets] = await Promise.all([
+  const [fieldRows, queue, offsets, directDebitInText] = await Promise.all([
     db
       .select()
       .from(extractedFields)
@@ -86,6 +103,7 @@ export async function getReviewDocument(userId: string, documentId: string) {
       .orderBy(asc(extractedFields.createdAt)),
     reviewQueue(userId),
     reminderOffsets(userId),
+    documentMentionsDirectDebit(doc.id),
   ]);
 
   const stored: StoredField[] = fieldRows.map((row) => ({
@@ -118,6 +136,7 @@ export async function getReviewDocument(userId: string, documentId: string) {
     boxes,
     duplicate,
     reminderOffsetDays: offsets,
+    textMentionsDirectDebit: directDebitInText,
     queue: {
       position: index >= 0 ? index + 1 : null,
       total: queue.length,
@@ -128,3 +147,60 @@ export async function getReviewDocument(userId: string, documentId: string) {
 }
 
 export type ReviewData = NonNullable<Awaited<ReturnType<typeof getReviewDocument>>>;
+
+/** A document with its confirmed fields and what it created, for the read-only page. */
+export async function getDocumentDetail(userId: string, documentId: string) {
+  const doc = await db.query.documents.findFirst({
+    where: and(eq(documents.id, documentId), eq(documents.userId, userId)),
+  });
+  if (!doc) return null;
+
+  const [fieldRows, taskRows, workRows] = await Promise.all([
+    db
+      .select()
+      .from(extractedFields)
+      .where(eq(extractedFields.documentId, doc.id))
+      .orderBy(asc(extractedFields.createdAt)),
+    db
+      .select({
+        id: tasks.id,
+        kind: tasks.kind,
+        title: tasks.title,
+        dueDate: tasks.dueDate,
+        status: tasks.status,
+        completionNote: tasks.completionNote,
+      })
+      .from(tasks)
+      .where(and(eq(tasks.documentId, doc.id), eq(tasks.userId, userId)))
+      .orderBy(asc(tasks.dueDate)),
+    db
+      .select({
+        month: workEntries.month,
+        fullDays: workEntries.fullDays,
+        halfDays: workEntries.halfDays,
+      })
+      .from(workEntries)
+      .where(and(eq(workEntries.documentId, doc.id), eq(workEntries.userId, userId))),
+  ]);
+
+  return {
+    document: {
+      id: doc.id,
+      status: doc.status,
+      type: doc.type,
+      sender: doc.sender,
+      receivedDate: doc.receivedDate,
+      originalFileName: doc.originalFileName,
+      mimeType: doc.mimeType,
+      summary: doc.summary,
+    },
+    fields: fieldRows.map((row) => ({ key: row.key, value: row.value, edited: row.editedByUser })),
+    boxes: fieldRows
+      .filter((row) => row.sourcePage !== null && row.boundingBox)
+      .map((row) => ({ key: row.key, page: row.sourcePage!, box: row.boundingBox! })),
+    tasks: taskRows,
+    workEntries: workRows,
+  };
+}
+
+export type DocumentDetail = NonNullable<Awaited<ReturnType<typeof getDocumentDetail>>>;

@@ -169,7 +169,15 @@
       "source": "Quelle"
     },
     "markDone": "Erledigen",
-    "empty": "Keine Aufgaben."
+    "empty": "Keine Aufgaben.",
+    "markDoneTitle": "Aufgabe als erledigt markieren",
+    "noteLabel": "Notiz (optional)",
+    "notePlaceholder": "z. B. am 12.10. überwiesen",
+    "cancel": "Abbrechen",
+    "done": "Erledigt: {title}",
+    "doneFailed": "Die Aufgabe konnte nicht als erledigt markiert werden.",
+    "notePrefix": "Notiz:",
+    "openDocument": "Dokument"
   },
   "records": {
     "searchPlaceholder": "Absender oder Referenz suchen",
@@ -267,7 +275,8 @@
     "half_days": "Tage ≤ 4 Std.",
     "gross_pay": "Bruttoverdienst",
     "net_pay": "Nettoverdienst",
-    "deadline": "Frist"
+    "deadline": "Frist",
+    "payment_method": "Zahlungsart"
   },
   "review": {
     "back": "Zurück",
@@ -372,7 +381,12 @@
         "attend": "Termin wahrnehmen, {location}, {time}",
         "prepare": "Vorbereiten: {items}",
         "respond": "{sender} antworten",
-        "handle": "Schreiben von {sender} erledigen"
+        "handle": "Schreiben von {sender} erledigen",
+        "prepareGeneric": "Unterlagen für den Termin vorbereiten"
+      },
+      "note": "Hinweis",
+      "notes": {
+        "directDebit": "Keine Zahlungsaufgabe: Der Betrag wird per Lastschrift eingezogen."
       }
     },
     "generated": "Aus dem Dokument erzeugt · kann Fehler enthalten",
@@ -386,7 +400,7 @@
     },
     "hints": {
       "tab": "nächstes Feld",
-      "enter": "nächstes offenes Feld",
+      "enter": "Feld übernehmen, nächstes offenes",
       "confirm": "Dokument bestätigen",
       "nav": "nächstes / vorheriges"
     },
@@ -405,6 +419,20 @@
       "title": "Wartet nicht auf Prüfung",
       "description": "Dieses Dokument wartet nicht auf Prüfung. Seinen aktuellen Status siehst du im Posteingang.",
       "back": "Zum Posteingang"
-    }
+    },
+    "accept": "So übernehmen"
+  },
+  "documentDetail": {
+    "title": "Dokument",
+    "status": "Status",
+    "statuses": {
+      "confirmed": "Bestätigt",
+      "informationOnly": "Nur zur Information"
+    },
+    "corrected": "korrigiert",
+    "created": "Aus diesem Dokument erstellt",
+    "nothingCreated": "Es wurden keine Aufgaben oder Einträge erstellt.",
+    "taskDone": "Erledigt",
+    "openTasks": "Zu den Aufgaben"
   }
 }

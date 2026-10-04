@@ -45,6 +45,11 @@ export const documentFields: Record<DocumentTypeKey, FieldDefinition[]> = {
     field("reference", "reference", "Payment reference, customer, contract or insurance number."),
     field("iban", "iban", "IBAN the payment should go to."),
     field("period", "text", "Billing period the invoice covers."),
+    field(
+      "payment_method",
+      "text",
+      "How the amount is paid: by the recipient (bank transfer, Überweisung) or collected by the sender (direct debit, SEPA-Lastschrift, Abbuchung). Copy the wording from the letter.",
+    ),
   ],
   appointment: [
     sender,

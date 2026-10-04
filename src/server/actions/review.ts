@@ -15,11 +15,10 @@ import {
   canConfirm,
   editedKeys,
   nextInQueue,
-  plannedActions,
   validateReview,
-  type PlannedAction,
   type StoredField,
 } from "@/lib/review";
+import { tasksForDocument, type PlannedTask } from "@/lib/task-rules";
 import { documentFields, documentTypes, type DocumentTypeKey } from "@/lib/schemas/document-fields";
 import type { FieldResult } from "@/lib/validation/validate-document";
 
@@ -29,16 +28,23 @@ import { documents, extractedFields, reminders, tasks, workEntries } from "../db
 import { documentUploaded, inngest } from "../inngest/client";
 import { queueErrorCode } from "../pipeline/errors";
 import { markFailed } from "../pipeline/stages";
-import { findDuplicate, reminderOffsets, reviewQueue } from "../queries/review";
+import {
+  documentMentionsDirectDebit,
+  findDuplicate,
+  reminderOffsets,
+  reviewQueue,
+} from "../queries/review";
 import { requireSession } from "../session";
 
 const reviewInput = z.object({
   documentId: z.uuid(),
   type: z.enum(documentTypes),
   values: z.record(z.string().max(64), z.string().max(1000)),
+  /** Fields the user accepted as they are (see ACCEPTABLE_RULES). */
+  accepted: z.array(z.string().max(64)).max(50).default([]),
 });
 
-export type ReviewInput = z.infer<typeof reviewInput>;
+export type ReviewInput = z.input<typeof reviewInput>;
 
 export type ReviewActionResult =
   | { ok: true; next: string | null; created?: number }
@@ -75,6 +81,7 @@ function fieldStatements(
   type: DocumentTypeKey,
   results: FieldResult[],
   edited: string[],
+  accepted: string[] = [],
 ): Statement[] {
   const statements: Statement[] = [];
   const rowByKey = new Map(rows.map((row) => [row.key, row]));
@@ -118,12 +125,13 @@ function fieldStatements(
           })
           .where(eq(extractedFields.id, row.id)),
       );
-      if (isEdited) {
+      const isAccepted = !isEdited && accepted.includes(result.key) && row.state !== result.state;
+      if (isEdited || isAccepted) {
         statements.push(
           auditInsert({
             userId,
             actor: "user",
-            action: "field.corrected",
+            action: isEdited ? "field.corrected" : "field.accepted",
             entityType: "field",
             entityId: row.id,
             before: { documentId: doc.id, key: row.key, value: row.value, state: row.state },
@@ -197,16 +205,24 @@ async function prepare(input: ReviewInput) {
   if (!loaded) return { error: "notReviewable" as const };
 
   const locale = await currentLocale();
-  const { type, values } = parsed.data;
+  const { type, values, accepted } = parsed.data;
   const stored: StoredField[] = loaded.rows.map((row) => ({
     key: row.key,
     value: row.value,
     confidence: row.confidence,
     located: row.sourcePage !== null,
   }));
-  const results = validateReview(type, stored, values, locale);
+  const results = validateReview(type, stored, values, locale, accepted);
   const edited = editedKeys(type, stored, values, locale);
-  const statements = fieldStatements(user.id, loaded.doc, loaded.rows, type, results, edited);
+  const statements = fieldStatements(
+    user.id,
+    loaded.doc,
+    loaded.rows,
+    type,
+    results,
+    edited,
+    accepted,
+  );
   return { userId: user.id, locale, type, results, edited, statements, ...loaded };
 }
 
@@ -231,7 +247,7 @@ export async function saveDraft(input: ReviewInput): Promise<ReviewActionResult>
   return { ok: true, next: null };
 }
 
-async function taskTitle(action: Extract<PlannedAction, { kind: "task" }>, locale: Locale) {
+async function taskTitle(action: PlannedTask, locale: Locale) {
   const t = await getTranslations({ locale, namespace: "review.creates.titles" });
   const values = { ...action.values };
   if (action.amountCents !== null) values.amount = formatCurrency(action.amountCents, locale);
@@ -252,9 +268,10 @@ export async function confirmDocument(input: ReviewInput): Promise<ReviewActionR
   if (!canConfirm(results, duplicate)) return { ok: false, error: "notConfirmable" };
 
   const queue = await reviewQueue(userId);
-  const actions = plannedActions(type, results, {
+  const actions = tasksForDocument(type, results, {
     reminderOffsetDays: await reminderOffsets(userId),
     today: todayIso(),
+    textMentionsDirectDebit: await documentMentionsDirectDebit(doc.id),
   });
 
   const createdTasks: string[] = [];

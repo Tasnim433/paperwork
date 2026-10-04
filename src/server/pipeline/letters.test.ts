@@ -13,6 +13,7 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import type { DocumentTypeKey } from "@/lib/schemas/document-fields";
 import { locateValue } from "@/lib/text/locate";
+import { tasksForDocument, textMentionsDirectDebit, type PlannedAction } from "@/lib/task-rules";
 import { pageTextFromWords } from "@/lib/text/pdf-words";
 import { validateDocument, type FieldResult } from "@/lib/validation/validate-document";
 
@@ -144,6 +145,76 @@ describe("fixture letters with AI_PROVIDER=mock", { timeout: 180_000 }, () => {
       flagged.every((r) => r.rule === "source.notFound"),
       JSON.stringify(stateOf(results)),
     ).toBe(true);
+  });
+});
+
+/** Tasks as "kind amount-in-cents due-date", work days as "workDays month +full/+half". */
+function plannedSummary(actions: PlannedAction[]): string[] {
+  return actions.flatMap((action) => {
+    if (action.kind === "task") {
+      return [
+        [action.taskKind, action.amountCents ?? "", action.dueDate ?? ""].filter(String).join(" "),
+      ];
+    }
+    if (action.kind === "workDays")
+      return [`workDays ${action.month} +${action.fullDays}/+${action.halfDays}`];
+    if (action.kind === "note") return [`note ${action.reason}`];
+    return [];
+  });
+}
+
+async function tasksForLetter(file: string) {
+  const { type, results, pages } = await processLetter(file);
+  const text = pages.map((page) => pageTextFromWords(page.words)).join("\n");
+  return plannedSummary(
+    tasksForDocument(type, results, {
+      reminderOffsetDays: [7, 3, 1],
+      today: "2026-10-01",
+      textMentionsDirectDebit: textMentionsDirectDebit(text),
+    }),
+  );
+}
+
+describe("tasks from fixture letters (EXPECTED_RESULTS.md)", { timeout: 180_000 }, () => {
+  it("01: pay 132,48 € by 15.11.2026", async () => {
+    expect(await tasksForLetter("01_krankenkasse_beitragsrechnung.pdf")).toEqual([
+      "pay 13248 2026-11-15",
+    ]);
+  });
+
+  it("02: pay 55,08 € by 15.10.2026", async () => {
+    expect(await tasksForLetter("02_beitragsstelle_zahlungsaufforderung.pdf")).toEqual([
+      "pay 5508 2026-10-15",
+    ]);
+  });
+
+  it("03: attend 22.10.2026 and prepare the day before", async () => {
+    expect(await tasksForLetter("03_auslaenderbehoerde_terminbestaetigung.jpg")).toEqual([
+      "attend 2026-10-22",
+      "prepare 2026-10-21",
+    ]);
+  });
+
+  it("04: no task, +3 full and +11 half work days", async () => {
+    expect(await tasksForLetter("04_lohnabrechnung_september_2026.pdf")).toEqual([
+      "workDays 2026-09 +3/+11",
+    ]);
+  });
+
+  it("05: pay 86,20 € by 31.10.2026", async () => {
+    expect(await tasksForLetter("05_nebenkostenabrechnung_2025.pdf")).toEqual([
+      "pay 8620 2026-10-31",
+    ]);
+  });
+
+  it("06: nothing", async () => {
+    expect(await tasksForLetter("06_universitaet_information.pdf")).toEqual([]);
+  });
+
+  it("07: direct debit, so no pay task", async () => {
+    expect(await tasksForLetter("07_stadtwerke_abschlag_unscharf.jpg")).toEqual([
+      "note directDebit",
+    ]);
   });
 });
 

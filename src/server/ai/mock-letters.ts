@@ -30,6 +30,7 @@ export const mockLetters: MockLetter[] = [
       reference: { value: "X123456789", sourceText: "Versichertennummer: X123456789" },
       iban: { value: "DE89 3704 0044 0532 0130 00" },
       period: { value: "01.10.2026 bis 31.03.2027" },
+      payment_method: { value: "Überweisung", sourceText: "Bitte überweisen Sie" },
     },
   },
   {
@@ -90,6 +91,7 @@ export const mockLetters: MockLetter[] = [
       // Fails the checksum on purpose: must end up as "check".
       iban: { value: "DE12 3704 0044 0532 0130 00" },
       period: { value: "01.01.2025 bis 31.12.2025" },
+      payment_method: { value: "Überweisung", sourceText: "Bitte überweisen Sie" },
     },
   },
   {
@@ -117,6 +119,7 @@ export const mockLetters: MockLetter[] = [
       due_date: { value: "01.11.2026", confidence: 0.6 },
       reference: { value: "SW-77120934", confidence: 0.6 },
       period: { value: "monatlich ab 01.11.2026", confidence: 0.5 },
+      payment_method: { value: "SEPA-Lastschrift", confidence: 0.6 },
     },
   },
 ];

@@ -4,7 +4,6 @@
  */
 import type { Locale } from "@/i18n/config";
 
-import { addDays, type IsoDate } from "./dates";
 import { formatDate } from "./format";
 import { documentFields, type DocumentTypeKey, type FieldKind } from "./schemas/document-fields";
 import { centsToDecimal, parseAmountCents } from "./validation/parse";
@@ -48,6 +47,7 @@ export function reviewInputs(
   stored: StoredField[],
   values: Record<string, string>,
   locale: Locale,
+  accepted: string[] = [],
 ): Record<string, FieldInput> {
   const byKey = new Map(stored.map((field) => [field.key, field]));
   return Object.fromEntries(
@@ -58,12 +58,22 @@ export function reviewInputs(
       const edited = current.trim() !== initial.trim();
       return [
         definition.key,
-        edited || !original
+        edited || !original || accepted.includes(definition.key)
           ? { value: current.trim() || null, confidence: null, located: true }
           : { value: original.value, confidence: original.confidence, located: original.located },
       ];
     }),
   );
+}
+
+/**
+ * Rules that only say "compare with the original": the user may accept the value
+ * as it is. Format errors (invalid IBAN, date, …) always need a corrected value.
+ */
+export const ACCEPTABLE_RULES = ["source.notFound", "confidence.low"];
+
+export function canAccept(rule: string | null | undefined): boolean {
+  return !!rule && ACCEPTABLE_RULES.includes(rule);
 }
 
 /** Keys whose value differs from what is stored (after trimming). */
@@ -113,144 +123,15 @@ export function canConfirm(results: Pick<FieldResult, "state">[], duplicate: boo
   return !duplicate && results.every((result) => result.state === "valid");
 }
 
-/** What confirming creates, derived by fixed rules from the type and the validated fields. */
-export type PlannedAction =
-  | {
-      kind: "task";
-      taskKind: "pay" | "attend" | "prepare" | "respond";
-      /** Message key under review.creates.titles. */
-      title: "pay" | "attend" | "prepare" | "respond" | "handle";
-      values: Record<string, string>;
-      dueDate: IsoDate | null;
-      amountCents: number | null;
-      /** Reminder dates (only for the main task with a deadline). */
-      reminders: IsoDate[];
-    }
-  | { kind: "workDays"; month: string; fullDays: number; halfDays: number; hours: string | null }
-  | { kind: "record" };
-
-/**
- * Plans tasks, reminders and work-day entries. `values` are the normalized
- * results of validation (ISO dates, decimal amounts, HH:MM, YYYY-MM).
- * Reminders are scheduled at the user's offsets before the deadline, never in the past.
- */
-export function plannedActions(
-  type: DocumentTypeKey,
-  results: Pick<FieldResult, "key" | "value">[],
-  options: { reminderOffsetDays: number[]; today: IsoDate },
-): PlannedAction[] {
-  const get = (key: string) => results.find((result) => result.key === key)?.value ?? null;
-  const sender = get("sender") ?? "";
-  const reminders = (due: IsoDate | null) =>
-    due
-      ? [...new Set(options.reminderOffsetDays)]
-          .sort((a, b) => b - a)
-          .map((offset) => addDays(due, -offset))
-          .filter((date) => date > options.today)
-      : [];
-
-  const actions: PlannedAction[] = [];
-
-  switch (type) {
-    case "invoice": {
-      const due = get("due_date");
-      const amount = get("amount");
-      actions.push({
-        kind: "task",
-        taskKind: "pay",
-        title: "pay",
-        values: { amount: amount ?? "", sender },
-        dueDate: due,
-        amountCents: amount ? parseAmountCents(amount) : null,
-        reminders: reminders(due),
-      });
-      break;
-    }
-    case "appointment": {
-      const date = get("appointment_date");
-      actions.push({
-        kind: "task",
-        taskKind: "attend",
-        title: "attend",
-        values: { location: get("location") ?? "", time: get("time") ?? "" },
-        dueDate: date,
-        amountCents: null,
-        reminders: reminders(date),
-      });
-      const bring = get("bring");
-      if (bring) {
-        actions.push({
-          kind: "task",
-          taskKind: "prepare",
-          title: "prepare",
-          values: { items: bring },
-          dueDate: date ? addDays(date, -1) : null,
-          amountCents: null,
-          reminders: [],
-        });
-      }
-      break;
-    }
-    case "decision_letter": {
-      const deadline = get("response_deadline");
-      if (deadline) {
-        actions.push({
-          kind: "task",
-          taskKind: "respond",
-          title: "respond",
-          values: { sender },
-          dueDate: deadline,
-          amountCents: null,
-          reminders: reminders(deadline),
-        });
-      }
-      break;
-    }
-    case "other": {
-      const deadline = get("deadline");
-      if (deadline) {
-        actions.push({
-          kind: "task",
-          taskKind: "respond",
-          title: "handle",
-          values: { sender },
-          dueDate: deadline,
-          amountCents: null,
-          reminders: reminders(deadline),
-        });
-      }
-      break;
-    }
-    case "payslip": {
-      const month = get("period");
-      if (month) {
-        actions.push({
-          kind: "workDays",
-          month,
-          fullDays: Number(get("full_days") ?? 0),
-          halfDays: Number(get("half_days") ?? 0),
-          hours: get("total_hours"),
-        });
-      }
-      break;
-    }
-    case "contract":
-    case "information_only":
-      break;
-  }
-
-  actions.push({ kind: "record" });
-  return actions;
-}
-
 /** Validates the form state of the Review screen with the pipeline's rules. */
 export function validateReview(
   type: DocumentTypeKey,
   stored: StoredField[],
   values: Record<string, string>,
   locale: Locale,
+  accepted: string[] = [],
 ): FieldResult[] {
-  return validateDocument(type, reviewInputs(type, stored, values, locale));
+  return validateDocument(type, reviewInputs(type, stored, values, locale, accepted));
 }
 
 /** Fields that identify the same letter arriving twice (in addition to type and sender). */

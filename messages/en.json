@@ -169,7 +169,15 @@
       "source": "Source"
     },
     "markDone": "Mark done",
-    "empty": "No tasks."
+    "empty": "No tasks.",
+    "markDoneTitle": "Mark task as done",
+    "noteLabel": "Note (optional)",
+    "notePlaceholder": "e.g. paid on 12.10. by bank transfer",
+    "cancel": "Cancel",
+    "done": "Done: {title}",
+    "doneFailed": "The task could not be marked as done.",
+    "notePrefix": "Note:",
+    "openDocument": "Document"
   },
   "records": {
     "searchPlaceholder": "Search sender or reference",
@@ -267,7 +275,8 @@
     "half_days": "Days ≤ 4 h",
     "gross_pay": "Gross pay",
     "net_pay": "Net pay",
-    "deadline": "Deadline"
+    "deadline": "Deadline",
+    "payment_method": "Payment method"
   },
   "review": {
     "back": "Back",
@@ -372,7 +381,12 @@
         "attend": "Attend appointment, {location}, {time}",
         "prepare": "Prepare: {items}",
         "respond": "Respond to {sender}",
-        "handle": "Handle letter from {sender}"
+        "handle": "Handle letter from {sender}",
+        "prepareGeneric": "Prepare documents for the appointment"
+      },
+      "note": "Note",
+      "notes": {
+        "directDebit": "No payment task: the amount is collected by direct debit."
       }
     },
     "generated": "Generated from the document · may contain errors",
@@ -386,7 +400,7 @@
     },
     "hints": {
       "tab": "next field",
-      "enter": "next field to check",
+      "enter": "accept field, next to check",
       "confirm": "confirm document",
       "nav": "next / previous"
     },
@@ -405,6 +419,20 @@
       "title": "Not waiting for review",
       "description": "This document is not waiting for review. Its current status is shown in the Inbox.",
       "back": "Back to Inbox"
-    }
+    },
+    "accept": "Accept as is"
+  },
+  "documentDetail": {
+    "title": "Document",
+    "status": "Status",
+    "statuses": {
+      "confirmed": "Confirmed",
+      "informationOnly": "Information only"
+    },
+    "corrected": "corrected",
+    "created": "Created from this document",
+    "nothingCreated": "No tasks or entries were created.",
+    "taskDone": "Done",
+    "openTasks": "Open Tasks"
   }
 }

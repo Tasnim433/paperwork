@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  canAccept,
   canConfirm,
   displayValue,
   documentChecks,
   editedKeys,
   isSameLetter,
   nextInQueue,
-  plannedActions,
   validateReview,
   type StoredField,
 } from "./review";
@@ -84,6 +84,23 @@ describe("validateReview", () => {
     ).toMatchObject({ state: "valid", value: "86.21" });
   });
 
+  it("lets the user accept values not found in the document, but not format errors", () => {
+    const fields = [...utility.filter((f) => f.key !== "amount"), stored("amount", "86.20", false)];
+    const accepted = validateReview("invoice", fields, {}, "de", ["amount", "iban"]);
+    expect(accepted.find((r) => r.key === "amount")).toMatchObject({
+      state: "valid",
+      value: "86.20",
+    });
+    expect(accepted.find((r) => r.key === "iban")).toMatchObject({
+      state: "check",
+      rule: "iban.invalid",
+    });
+    expect(canAccept("source.notFound")).toBe(true);
+    expect(canAccept("confidence.low")).toBe(true);
+    expect(canAccept("iban.invalid")).toBe(false);
+    expect(canAccept(null)).toBe(false);
+  });
+
   it("treats the displayed format as unchanged", () => {
     expect(
       editedKeys("invoice", utility, { amount: "86,20", due_date: "31.10.2026" }, "de"),
@@ -114,65 +131,6 @@ describe("documentChecks", () => {
     const results = validateReview("invoice", utility, { iban: "DE89370400440532013000" }, "de");
     expect(documentChecks(results, true).at(-1)).toEqual({ key: "duplicate", passed: false });
     expect(canConfirm(results, true)).toBe(false);
-  });
-});
-
-describe("plannedActions", () => {
-  const options = { reminderOffsetDays: [7, 3, 1], today: "2026-10-04" };
-
-  it("plans a payment task with reminders for an invoice", () => {
-    const results = validateReview("invoice", utility, { iban: "DE89370400440532013000" }, "de");
-    expect(plannedActions("invoice", results, options)).toEqual([
-      {
-        kind: "task",
-        taskKind: "pay",
-        title: "pay",
-        values: { amount: "86.20", sender: "Hausverwaltung Muster" },
-        dueDate: "2026-10-31",
-        amountCents: 8620,
-        reminders: ["2026-10-24", "2026-10-28", "2026-10-30"],
-      },
-      { kind: "record" },
-    ]);
-  });
-
-  it("skips reminders in the past", () => {
-    const results = [
-      { key: "due_date", value: "2026-10-06" },
-      { key: "amount", value: "55.08" },
-    ];
-    const [task] = plannedActions("invoice", results, options);
-    expect(task.kind === "task" && task.reminders).toEqual(["2026-10-05"]);
-  });
-
-  it("plans attend and prepare tasks for an appointment", () => {
-    const results = [
-      { key: "appointment_date", value: "2026-10-22" },
-      { key: "time", value: "09:30" },
-      { key: "location", value: "Zimmer 2.14" },
-      { key: "bring", value: "Reisepass" },
-    ];
-    const actions = plannedActions("appointment", results, options);
-    expect(actions.map((a) => (a.kind === "task" ? `${a.taskKind}:${a.dueDate}` : a.kind))).toEqual(
-      ["attend:2026-10-22", "prepare:2026-10-21", "record"],
-    );
-  });
-
-  it("plans a work-day entry for a payslip and nothing for information letters", () => {
-    const payslip = [
-      { key: "period", value: "2026-09" },
-      { key: "full_days", value: "3" },
-      { key: "half_days", value: "11" },
-      { key: "total_hours", value: "63.5" },
-    ];
-    expect(plannedActions("payslip", payslip, options)[0]).toEqual({
-      kind: "workDays",
-      month: "2026-09",
-      fullDays: 3,
-      halfDays: 11,
-      hours: "63.5",
-    });
-    expect(plannedActions("information_only", [], options)).toEqual([{ kind: "record" }]);
   });
 });
 
