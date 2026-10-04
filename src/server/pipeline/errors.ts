@@ -1,11 +1,19 @@
 import { NonRetriableError, RetryAfterError } from "inngest";
 
+import { isConnectionError } from "@/lib/errors";
+
 import { providerBusy } from "../ai";
 import { UnreadableDocumentError } from "./text-extraction";
 
 /** Error codes stored on failed documents and translated in the UI. */
 export type PipelineErrorCode =
-  "unreadable" | "rate_limited" | "quota_exhausted" | "not_found" | "queue_unavailable" | "unknown";
+  | "unreadable"
+  | "rate_limited"
+  | "quota_exhausted"
+  | "not_found"
+  | "queue_unavailable"
+  | "queue_not_running"
+  | "unknown";
 
 /** Backoff when the AI provider is busy and sends no Retry-After: 20 s, 40 s, 80 s … max 5 min. */
 export function backoffMs(attempt: number): number {
@@ -50,4 +58,12 @@ export function errorCode(error: unknown): PipelineErrorCode {
   if (/provider busy|rate limit|overload|429|503|high demand/i.test(text)) return "rate_limited";
   if (/Document not found/i.test(text)) return "not_found";
   return "unknown";
+}
+
+/**
+ * Why an event could not be sent to Inngest: nothing reachable (locally: the
+ * dev server is not running) or another error (e.g. a missing event key).
+ */
+export function queueErrorCode(error: unknown): PipelineErrorCode {
+  return isConnectionError(error) ? "queue_not_running" : "queue_unavailable";
 }

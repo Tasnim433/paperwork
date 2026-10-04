@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
+import { isStaleQueued } from "@/lib/inbox";
 import type { InboxRow } from "@/server/queries/documents";
 
 import { RetryButton } from "./retry-button";
@@ -14,6 +15,7 @@ const errorCodes = [
   "rate_limited",
   "quota_exhausted",
   "queue_unavailable",
+  "queue_not_running",
   "not_found",
   "unknown",
 ] as const;
@@ -23,7 +25,9 @@ async function InboxStatus({ doc }: { doc: InboxRow }) {
 
   switch (doc.status) {
     case "received":
-      return (
+      return isStaleQueued(doc) ? (
+        <StatusDot tone="warning">{t("inboxStatus.notStarted")}</StatusDot>
+      ) : (
         <StatusDot tone="brand" className="before:animate-pulse">
           {t("inboxStatus.queued")}
         </StatusDot>
@@ -121,7 +125,9 @@ export async function InboxTable({ documents }: { documents: InboxRow[] }) {
                     <Link href={`/inbox/${doc.id}`}>{t("inbox.review")}</Link>
                   </Button>
                 )}
-                {doc.status === "failed" && <RetryButton documentId={doc.id} />}
+                {(doc.status === "failed" || isStaleQueued(doc)) && (
+                  <RetryButton documentId={doc.id} />
+                )}
               </Td>
             </tr>
           );

@@ -12,6 +12,7 @@ import { auditInsert } from "../audit";
 import { db } from "../db";
 import { documents } from "../db/schema";
 import { documentUploaded, inngest } from "../inngest/client";
+import { queueErrorCode } from "../pipeline/errors";
 import { markFailed } from "../pipeline/stages";
 import { requireSession } from "../session";
 
@@ -57,7 +58,7 @@ export async function retryDocument(documentId: string) {
   } catch (error) {
     const detail = describeError(error);
     console.error(`Could not queue document processing: ${detail}`);
-    await markFailed({ documentId: doc.id, userId: user.id }, "queue_unavailable", detail);
+    await markFailed({ documentId: doc.id, userId: user.id }, queueErrorCode(error), detail);
   }
 
   revalidatePath("/", "layout");

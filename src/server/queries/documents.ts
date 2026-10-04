@@ -31,6 +31,7 @@ export async function listInbox(userId: string) {
       sender: documents.sender,
       originalFileName: documents.originalFileName,
       receivedDate: documents.receivedDate,
+      updatedAt: documents.updatedAt,
       flaggedCount: sql<number>`coalesce(${flagged.count}, 0)`.mapWith(Number),
     })
     .from(documents)

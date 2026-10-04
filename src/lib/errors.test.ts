@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { describeError } from "./errors";
+import { describeError, isConnectionError } from "./errors";
 
 describe("describeError", () => {
   it("unwraps fetch errors to the network cause", () => {
@@ -55,5 +55,28 @@ describe("describeError", () => {
 
   it("truncates very long messages", () => {
     expect(describeError(new Error("x".repeat(1000)))).toHaveLength(400);
+  });
+});
+
+describe("isConnectionError", () => {
+  it("detects refused connections in the cause chain", () => {
+    const refused = Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:8288"), {
+      code: "ECONNREFUSED",
+    });
+    expect(isConnectionError(new TypeError("fetch failed", { cause: refused }))).toBe(true);
+    const aggregate = new AggregateError([refused], "");
+    expect(isConnectionError(new TypeError("fetch failed", { cause: aggregate }))).toBe(true);
+  });
+
+  it("detects unknown hosts", () => {
+    const notFound = Object.assign(new Error("getaddrinfo ENOTFOUND inngest.local"), {
+      code: "ENOTFOUND",
+    });
+    expect(isConnectionError(new TypeError("fetch failed", { cause: notFound }))).toBe(true);
+  });
+
+  it("ignores error responses and plain errors", () => {
+    expect(isConnectionError(new Error("401 Unauthorized: event key missing"))).toBe(false);
+    expect(isConnectionError(undefined)).toBe(false);
   });
 });

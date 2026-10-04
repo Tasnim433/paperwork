@@ -38,3 +38,37 @@ function messageOf(error: unknown): string {
   if (!text && typeof code === "string") return code;
   return text;
 }
+
+const CONNECTION_CODES = new Set([
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+  "EHOSTUNREACH",
+  "ETIMEDOUT",
+  "UND_ERR_CONNECT_TIMEOUT",
+  "UND_ERR_SOCKET",
+]);
+
+/**
+ * True when the error means the other side could not be reached at all (nothing
+ * listening, unknown host, connection reset), as opposed to an error response.
+ */
+export function isConnectionError(error: unknown): boolean {
+  const seen = new Set<unknown>();
+  const queue: unknown[] = [error];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current || typeof current !== "object" || seen.has(current)) continue;
+    seen.add(current);
+    const { code, cause, errors } = current as {
+      code?: unknown;
+      cause?: unknown;
+      errors?: unknown;
+    };
+    if (typeof code === "string" && CONNECTION_CODES.has(code)) return true;
+    queue.push(cause);
+    if (Array.isArray(errors)) queue.push(...errors);
+  }
+  return false;
+}

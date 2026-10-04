@@ -10,6 +10,7 @@ import { auditInsert } from "@/server/audit";
 import { db } from "@/server/db";
 import { documents } from "@/server/db/schema";
 import { documentUploaded, inngest } from "@/server/inngest/client";
+import { queueErrorCode } from "@/server/pipeline/errors";
 import { markFailed } from "@/server/pipeline/stages";
 import { getSession } from "@/server/session";
 import { originalKey, storage } from "@/server/storage";
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
     // The file is stored; the user can start processing again with Retry.
     const detail = describeError(error);
     console.error(`Could not queue document processing: ${detail}`);
-    await markFailed({ documentId, userId }, "queue_unavailable", detail);
+    await markFailed({ documentId, userId }, queueErrorCode(error), detail);
   }
 
   return NextResponse.json<UploadResponse>({ ok: true, documentId }, { status: 201 });

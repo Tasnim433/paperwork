@@ -228,6 +228,7 @@
   },
   "inboxStatus": {
     "queued": "Queued",
+    "notStarted": "Not started yet",
     "failedAt": "Failed during {stage}",
     "failed": "Failed",
     "retry": "Retry",
@@ -237,7 +238,8 @@
       "quota_exhausted": "The daily AI limit is reached. Try again later.",
       "queue_unavailable": "The processing service could not be reached.",
       "not_found": "The document no longer exists.",
-      "unknown": "Something went wrong."
+      "unknown": "Something went wrong.",
+      "queue_not_running": "Processing service not running, start it with pnpm dev:all"
     }
   }
 }

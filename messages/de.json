@@ -228,6 +228,7 @@
   },
   "inboxStatus": {
     "queued": "In Warteschlange",
+    "notStarted": "Noch nicht gestartet",
     "failedAt": "Fehler bei {stage}",
     "failed": "Fehlgeschlagen",
     "retry": "Erneut versuchen",
@@ -237,7 +238,8 @@
       "quota_exhausted": "Das tägliche KI-Limit ist erreicht. Versuche es später erneut.",
       "queue_unavailable": "Der Verarbeitungsdienst war nicht erreichbar.",
       "not_found": "Das Dokument existiert nicht mehr.",
-      "unknown": "Etwas ist schiefgelaufen."
+      "unknown": "Etwas ist schiefgelaufen.",
+      "queue_not_running": "Verarbeitungsdienst läuft nicht, starte ihn mit pnpm dev:all"
     }
   }
 }
