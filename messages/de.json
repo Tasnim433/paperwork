@@ -551,6 +551,14 @@
         "actor": "Akteur",
         "action": "Aktion",
         "object": "Objekt"
+      },
+      "retention": {
+        "label": "Verlauf aufbewahren",
+        "description": "Ältere Einträge werden jede Nacht automatisch entfernt. Einzelne Einträge können nicht gelöscht werden.",
+        "months": "{count} Monate",
+        "forever": "Unbegrenzt",
+        "saved": "Aufbewahrung des Verlaufs gespeichert.",
+        "failed": "Die Aufbewahrung konnte nicht gespeichert werden."
       }
     }
   },
@@ -576,7 +584,9 @@
         "draft_saved": "Entwurf gespeichert",
         "type_changed": "Dokumentart geändert",
         "confirmed": "Dokument bestätigt",
-        "filed_information_only": "Als Information abgelegt"
+        "filed_information_only": "Als Information abgelegt",
+        "deleted": "Dokument {id} vom Nutzer gelöscht",
+        "file_replaced": "Datei ersetzt"
       },
       "field": {
         "corrected": "Feld korrigiert",
@@ -593,7 +603,8 @@
         "created_manually": "Arbeitstage manuell eingetragen"
       },
       "settings": {
-        "reminders_changed": "Erinnerungen geändert"
+        "reminders_changed": "Erinnerungen geändert",
+        "retention_changed": "Aufbewahrung des Verlaufs geändert"
       },
       "documents": {
         "deleted_all": "Alle Dokumente gelöscht"
@@ -605,6 +616,52 @@
       "field": "Feld",
       "workEntry": "Arbeitstage {month}",
       "settings": "Einstellungen"
+    }
+  },
+  "documents": {
+    "menu": "Aktionen für {name}",
+    "actions": "Aktionen",
+    "select": "{name} auswählen",
+    "selectAll": "Alle auswählen",
+    "selected": "{count, plural, one {# Dokument ausgewählt} other {# Dokumente ausgewählt}}",
+    "clearSelection": "Auswahl aufheben",
+    "replace": {
+      "action": "Datei ersetzen",
+      "done": "{name} ersetzt. Die Verarbeitung wurde neu gestartet.",
+      "notAllowed": "Die Datei kann nur vor der Bestätigung und nicht während der Verarbeitung ersetzt werden."
+    },
+    "delete": {
+      "loading": "Es wird gezählt, was entfernt wird …",
+      "previewFailed": "Diese Dokumente können hier nicht mehr gelöscht werden.",
+      "failed": "Löschen fehlgeschlagen. Bitte versuche es erneut.",
+      "cancel": "Abbrechen",
+      "removes": "{count, plural, one {Entfernt werden das Dokument und:} other {Entfernt werden # Dokumente und:}}",
+      "auditNote": "Im Verlauf bleibt nur vermerkt, dass das Dokument gelöscht wurde, ohne Inhalte daraus.",
+      "items": {
+        "files": "Originaldateien",
+        "fields": "Erkannte Felder",
+        "pages": "Erkannte Seiten und Wörter",
+        "openTasks": "Offene Aufgaben",
+        "reminders": "Erinnerungen",
+        "completedTasks": "Erledigte Aufgaben",
+        "workEntries": "Arbeitstage-Einträge"
+      },
+      "discard": {
+        "action": "Verwerfen",
+        "selected": "Ausgewählte verwerfen",
+        "title": "{count, plural, one {Dokument verwerfen?} other {# Dokumente verwerfen?}}",
+        "warning": "Das Dokument und alles daraus Erkannte werden endgültig entfernt.",
+        "confirm": "{count, plural, one {Dokument verwerfen} other {# Dokumente verwerfen}}",
+        "done": "{count, plural, one {Dokument verworfen.} other {# Dokumente verworfen.}}"
+      },
+      "record": {
+        "action": "Dokument löschen",
+        "selected": "Ausgewählte löschen",
+        "title": "{count, plural, one {Dokument löschen?} other {# Dokumente löschen?}}",
+        "warning": "Das Dokument und alles daraus Erstellte werden endgültig entfernt. Das kann nicht rückgängig gemacht werden.",
+        "confirm": "{count, plural, one {Dokument löschen} other {# Dokumente löschen}}",
+        "done": "{count, plural, one {Dokument gelöscht.} other {# Dokumente gelöscht.}}"
+      }
     }
   }
 }

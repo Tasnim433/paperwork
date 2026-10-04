@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { ManualWorkDaysDialog } from "@/components/data/manual-work-days-dialog";
+import { DeleteDocumentButton } from "@/components/documents/document-actions";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -187,6 +188,10 @@ export function DocumentDetail({ data }: { data: Detail }) {
             <p className="mb-1.5 text-xs text-muted-foreground">{t("review.generated")}</p>
             <p className="text-[13.5px] text-ink-2">{doc.summary ?? t("review.noSummary")}</p>
           </section>
+
+          <div className="flex justify-end border-t border-border px-5 py-3">
+            <DeleteDocumentButton documentId={doc.id} kind="record" afterDelete="/records" />
+          </div>
         </div>
       </div>
     </div>

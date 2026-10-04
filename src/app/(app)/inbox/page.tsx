@@ -22,7 +22,7 @@ export default async function InboxPage() {
     <>
       <PageHeader title={t("title")} description={t("description")} />
       <DropZone />
-      <InboxTable documents={documents} />
+      <InboxTable documents={documents} selectable />
       <AutoRefresh active={processing} />
     </>
   );

@@ -1,0 +1,1 @@
+ALTER TABLE "user_settings" ADD COLUMN "history_retention_months" integer DEFAULT 12 NOT NULL;

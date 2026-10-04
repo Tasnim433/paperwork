@@ -7,5 +7,7 @@ export const userSettings = pgTable("user_settings", {
   locale: text().notNull().default("de"),
   /** Days before a deadline when reminders are sent. */
   reminderOffsetDays: integer().array().notNull().default([7, 3, 1]),
+  /** History log entries older than this many months are removed daily; 0 keeps everything. */
+  historyRetentionMonths: integer().notNull().default(12),
   ...timestamps,
 });

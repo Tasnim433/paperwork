@@ -1,8 +1,15 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { DocumentRowMenu } from "@/components/documents/document-row-menu";
+import {
+  RowCheckbox,
+  SelectAllCheckbox,
+  SelectionProvider,
+} from "@/components/documents/selection";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
+import { canReplaceFile } from "@/lib/deletion";
 import { formatDate } from "@/lib/format";
 import { isStaleQueued } from "@/lib/inbox";
 import type { InboxRow } from "@/server/queries/documents";
@@ -69,16 +76,28 @@ async function InboxStatus({ doc }: { doc: InboxRow }) {
   }
 }
 
-export async function InboxTable({ documents }: { documents: InboxRow[] }) {
+export async function InboxTable({
+  documents,
+  selectable = false,
+}: {
+  documents: InboxRow[];
+  /** Checkboxes, "Discard selected" and a row menu (Inbox page). */
+  selectable?: boolean;
+}) {
   const t = await getTranslations();
   const locale = await getLocale();
 
   if (documents.length === 0) return <EmptyState>{t("inbox.empty")}</EmptyState>;
 
-  return (
+  const table = (
     <Table>
       <thead>
         <tr>
+          {selectable && (
+            <Th className="w-8">
+              <SelectAllCheckbox />
+            </Th>
+          )}
           <Th>{t("inbox.columns.received")}</Th>
           <Th>{t("inbox.columns.sender")}</Th>
           <Th className={desktopOnly}>{t("inbox.columns.type")}</Th>
@@ -97,6 +116,11 @@ export async function InboxTable({ documents }: { documents: InboxRow[] }) {
           );
           return (
             <tr key={doc.id}>
+              {selectable && (
+                <Td className="w-8">
+                  <RowCheckbox id={doc.id} label={doc.sender ?? doc.originalFileName} />
+                </Td>
+              )}
               <Td className="whitespace-nowrap tabular-nums">
                 {formatDate(doc.receivedDate, locale)}
               </Td>
@@ -120,19 +144,37 @@ export async function InboxTable({ documents }: { documents: InboxRow[] }) {
                 <InboxStatus doc={doc} />
               </Td>
               <Td className="text-right">
-                {reviewable && (
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/inbox/${doc.id}`}>{t("inbox.review")}</Link>
-                  </Button>
-                )}
-                {(doc.status === "failed" || isStaleQueued(doc)) && (
-                  <RetryButton documentId={doc.id} />
-                )}
+                <span className="inline-flex items-center gap-1">
+                  {reviewable && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/inbox/${doc.id}`}>{t("inbox.review")}</Link>
+                    </Button>
+                  )}
+                  {(doc.status === "failed" || isStaleQueued(doc)) && (
+                    <RetryButton documentId={doc.id} />
+                  )}
+                  {selectable && (
+                    <DocumentRowMenu
+                      documentId={doc.id}
+                      label={doc.sender ?? doc.originalFileName}
+                      kind="discard"
+                      canReplace={canReplaceFile(doc.status)}
+                    />
+                  )}
+                </span>
               </Td>
             </tr>
           );
         })}
       </tbody>
     </Table>
+  );
+
+  return selectable ? (
+    <SelectionProvider ids={documents.map((doc) => doc.id)} kind="discard">
+      {table}
+    </SelectionProvider>
+  ) : (
+    table
   );
 }

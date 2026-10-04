@@ -36,6 +36,13 @@
       "when": 1791112677820,
       "tag": "0004_work_entry_source",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791113254734,
+      "tag": "0005_history_retention",
+      "breakpoints": true
     }
   ]
 }

@@ -7,8 +7,10 @@ import { PageHeader } from "@/components/page-header";
 import { pageMetadata } from "@/components/placeholder-page";
 import { ConfirmDeleteDialog } from "@/components/settings/confirm-delete-dialog";
 import { ReminderOffsetsForm } from "@/components/settings/reminder-offsets-form";
+import { RetentionSelect } from "@/components/settings/retention-select";
 import { Button } from "@/components/ui/button";
 import { isLocale } from "@/i18n/config";
+import { shortId } from "@/lib/deletion";
 import { formatDateTime } from "@/lib/format";
 import { DELETE_DOCUMENTS_WORD } from "@/lib/settings";
 import { deleteAccount, deleteAllDocuments } from "@/server/actions/settings";
@@ -16,6 +18,7 @@ import { reminderOffsets } from "@/server/queries/review";
 import {
   auditActors,
   HISTORY_PAGE_SIZE,
+  historyRetention,
   listHistory,
   parseActor,
   type HistoryEntry,
@@ -56,9 +59,10 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
     1000,
   );
 
-  const [offsets, history] = await Promise.all([
+  const [offsets, history, retention] = await Promise.all([
     reminderOffsets(user.id),
     listHistory(user.id, { actor, limit }),
+    historyRetention(user.id),
   ]);
 
   const historyHref = (next: { actor?: string; limit?: number }) => {
@@ -70,6 +74,9 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
   };
 
   const actionLabel = (entry: HistoryEntry) => {
+    if (entry.action === "document.deleted") {
+      return tAudit("actions.document.deleted", { id: shortId(entry.entityId) });
+    }
     const key = `actions.${entry.action}`;
     return tAudit.has(key as "actions.document.uploaded")
       ? tAudit(key as "actions.document.uploaded")
@@ -139,6 +146,14 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
 
       <section className="mb-11" id="history">
         <SectionTitle>{t("history.title")}</SectionTitle>
+        <div className="mb-4 border-t border-border">
+          <Row
+            label={t("history.retention.label")}
+            description={t("history.retention.description")}
+          >
+            <RetentionSelect months={retention} />
+          </Row>
+        </div>
         <div className="mb-4">
           <FilterTabs
             label={t("history.filterLabel")}

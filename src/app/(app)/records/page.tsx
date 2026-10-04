@@ -4,6 +4,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { FilterTabs } from "@/components/data/filter-tabs";
 import { ManualWorkDaysDialog } from "@/components/data/manual-work-days-dialog";
 import { RecordsSearch } from "@/components/data/records-search";
+import { DocumentRowMenu } from "@/components/documents/document-row-menu";
+import {
+  RowCheckbox,
+  SelectAllCheckbox,
+  SelectionProvider,
+} from "@/components/documents/selection";
 import { desktopOnly, EmptyState, Table, Td, Th } from "@/components/data/table";
 import { PageHeader } from "@/components/page-header";
 import { StatusDot } from "@/components/status-dot";
@@ -56,52 +62,74 @@ export default async function RecordsPage({ searchParams }: PageProps<"/records"
       {records.length === 0 ? (
         <EmptyState>{t("records.empty")}</EmptyState>
       ) : (
-        <Table>
-          <thead>
-            <tr>
-              <Th>{t("records.columns.date")}</Th>
-              <Th>{t("records.columns.sender")}</Th>
-              <Th>{t("records.columns.type")}</Th>
-              <Th className={desktopOnly}>{t("records.columns.reference")}</Th>
-              <Th className="text-right">{t("records.columns.tasks")}</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {records.map((record) => (
-              <tr key={record.id}>
-                <Td className="whitespace-nowrap tabular-nums">
-                  {formatDate(record.receivedDate, locale)}
-                </Td>
-                <Td>
-                  <Link
-                    href={`/records/${record.id}`}
-                    className="underline-offset-4 hover:underline"
-                  >
-                    {record.sender ?? t("common.unknownSender")}
-                  </Link>
-                </Td>
-                <Td>
-                  {t(`documentType.${record.type ?? "unknown"}`)}
-                  {needsManualWorkDays(record) && (
-                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                      <StatusDot tone="warning" className="text-[12.5px]">
-                        {t("workDays.notStated")}
-                      </StatusDot>
-                      <ManualWorkDaysDialog
-                        documentId={record.id}
-                        defaultMonth={periodMonth(record.period)}
-                      />
-                    </div>
-                  )}
-                </Td>
-                <Td className={`${desktopOnly} font-mono text-xs text-muted-foreground`}>
-                  {record.reference ?? "—"}
-                </Td>
-                <Td className="text-right tabular-nums">{record.taskCount}</Td>
+        <SelectionProvider ids={records.map((record) => record.id)} kind="record">
+          <Table>
+            <thead>
+              <tr>
+                <Th className="w-8">
+                  <SelectAllCheckbox />
+                </Th>
+                <Th>{t("records.columns.date")}</Th>
+                <Th>{t("records.columns.sender")}</Th>
+                <Th>{t("records.columns.type")}</Th>
+                <Th className={desktopOnly}>{t("records.columns.reference")}</Th>
+                <Th className="text-right">{t("records.columns.tasks")}</Th>
+                <Th className="w-10">
+                  <span className="sr-only">{t("documents.actions")}</span>
+                </Th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr key={record.id}>
+                  <Td className="w-8">
+                    <RowCheckbox
+                      id={record.id}
+                      label={record.sender ?? t("common.unknownSender")}
+                    />
+                  </Td>
+                  <Td className="whitespace-nowrap tabular-nums">
+                    {formatDate(record.receivedDate, locale)}
+                  </Td>
+                  <Td>
+                    <Link
+                      href={`/records/${record.id}`}
+                      className="underline-offset-4 hover:underline"
+                    >
+                      {record.sender ?? t("common.unknownSender")}
+                    </Link>
+                  </Td>
+                  <Td>
+                    {t(`documentType.${record.type ?? "unknown"}`)}
+                    {needsManualWorkDays(record) && (
+                      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                        <StatusDot tone="warning" className="text-[12.5px]">
+                          {t("workDays.notStated")}
+                        </StatusDot>
+                        <ManualWorkDaysDialog
+                          documentId={record.id}
+                          defaultMonth={periodMonth(record.period)}
+                        />
+                      </div>
+                    )}
+                  </Td>
+                  <Td className={`${desktopOnly} font-mono text-xs text-muted-foreground`}>
+                    {record.reference ?? "—"}
+                  </Td>
+                  <Td className="text-right tabular-nums">{record.taskCount}</Td>
+                  <Td className="w-10 text-right">
+                    <DocumentRowMenu
+                      documentId={record.id}
+                      label={record.sender ?? t("common.unknownSender")}
+                      kind="record"
+                      canReplace={false}
+                    />
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </SelectionProvider>
       )}
     </>
   );

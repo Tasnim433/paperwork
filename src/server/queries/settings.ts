@@ -3,7 +3,9 @@ import "server-only";
 import { and, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "../db";
-import { auditLog, documents, tasks, type AuditActor } from "../db/schema";
+import { DEFAULT_RETENTION_MONTHS } from "@/lib/deletion";
+
+import { auditLog, documents, tasks, userSettings, type AuditActor } from "../db/schema";
 
 export const auditActors: AuditActor[] = ["user", "ai", "system"];
 
@@ -54,3 +56,12 @@ export async function listHistory(userId: string, options: { actor?: AuditActor;
 }
 
 export type HistoryEntry = Awaited<ReturnType<typeof listHistory>>["entries"][number];
+
+/** History retention in months (0 = forever); the default when no settings exist. */
+export async function historyRetention(userId: string): Promise<number> {
+  const settings = await db.query.userSettings.findFirst({
+    where: eq(userSettings.userId, userId),
+    columns: { historyRetentionMonths: true },
+  });
+  return settings?.historyRetentionMonths ?? DEFAULT_RETENTION_MONTHS;
+}

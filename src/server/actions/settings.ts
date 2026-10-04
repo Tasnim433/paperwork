@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
+import { DEFAULT_RETENTION_MONTHS, parseRetention } from "@/lib/deletion";
 import { describeError } from "@/lib/errors";
 import { confirmationMatches, DELETE_DOCUMENTS_WORD, parseReminderOffsets } from "@/lib/settings";
 
@@ -46,6 +47,36 @@ export async function updateReminderOffsets(input: string): Promise<SettingsResu
       entityId: user.id,
       before: { reminderOffsetDays: before },
       after: { reminderOffsetDays: offsets },
+    }),
+  ]);
+  revalidatePath("/settings");
+  return { ok: true };
+}
+
+/** Changes how long the history log is kept (3, 6, 12 months or forever). */
+export async function updateHistoryRetention(value: number): Promise<SettingsResult> {
+  const { user } = await requireSession();
+  const months = parseRetention(value);
+  if (months === null) return { ok: false, error: "invalid" };
+  const current = await db.query.userSettings.findFirst({
+    where: eq(userSettings.userId, user.id),
+    columns: { historyRetentionMonths: true },
+  });
+  await db.batch([
+    db
+      .insert(userSettings)
+      .values({ userId: user.id, historyRetentionMonths: months })
+      .onConflictDoUpdate({ target: userSettings.userId, set: { historyRetentionMonths: months } }),
+    auditInsert({
+      userId: user.id,
+      actor: "user",
+      action: "settings.retention_changed",
+      entityType: "settings",
+      entityId: user.id,
+      before: {
+        historyRetentionMonths: current?.historyRetentionMonths ?? DEFAULT_RETENTION_MONTHS,
+      },
+      after: { historyRetentionMonths: months },
     }),
   ]);
   revalidatePath("/settings");

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
+import { DeleteDocumentButton, ReplaceFileButton } from "@/components/documents/document-actions";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
 import { useUpload } from "@/components/upload/upload-provider";
@@ -468,6 +469,18 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
                   ? t("review.actions.reprocessConfirm")
                   : t("review.actions.reprocess")}
               </Button>
+              <ReplaceFileButton documentId={doc.id} afterReplace="/inbox" />
+              <DeleteDocumentButton
+                documentId={doc.id}
+                kind="discard"
+                afterDelete={
+                  queue.next
+                    ? `/inbox/${queue.next}`
+                    : queue.previous
+                      ? `/inbox/${queue.previous}`
+                      : "/inbox"
+                }
+              />
             </div>
           </div>
 

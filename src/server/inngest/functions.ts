@@ -1,3 +1,5 @@
+import { cron } from "inngest";
+
 import { describeError } from "@/lib/errors";
 
 import { errorCode, nonRetriable, withRateLimitRetry } from "../pipeline/errors";
@@ -10,6 +12,7 @@ import {
   summarize,
   validate,
 } from "../pipeline/stages";
+import { purgeExpiredHistory } from "../retention";
 import { documentUploaded, inngest } from "./client";
 
 /**
@@ -60,4 +63,16 @@ export const processDocument = inngest.createFunction(
   },
 );
 
-export const functions = [processDocument];
+/**
+ * Daily: removes history log entries older than each user's retention setting
+ * (3, 6 or 12 months; 0 keeps everything). Users without settings get the default.
+ */
+export const purgeHistory = inngest.createFunction(
+  { id: "purge-history", triggers: [cron("TZ=Europe/Berlin 0 3 * * *")], retries: 3 },
+  async ({ step }) => {
+    const removed = await step.run("purge-expired-entries", () => purgeExpiredHistory(new Date()));
+    return { removed };
+  },
+);
+
+export const functions = [processDocument, purgeHistory];

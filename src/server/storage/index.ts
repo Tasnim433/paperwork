@@ -25,3 +25,13 @@ export function storage(): Storage {
 export function originalKey(userId: string, documentId: string, extension: string) {
   return `users/${userId}/${documentId}/original.${extension}`;
 }
+
+/** Storage key for a replacement original: a new key, so originals are never overwritten. */
+export function replacementKey(
+  userId: string,
+  documentId: string,
+  version: string,
+  extension: string,
+) {
+  return `users/${userId}/${documentId}/original-${version}.${extension}`;
+}

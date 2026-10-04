@@ -551,6 +551,14 @@
         "actor": "Actor",
         "action": "Action",
         "object": "Object"
+      },
+      "retention": {
+        "label": "Keep history",
+        "description": "Older entries are removed automatically every night. Single entries cannot be deleted.",
+        "months": "{count} months",
+        "forever": "Forever",
+        "saved": "History retention saved.",
+        "failed": "Could not save the history retention."
       }
     }
   },
@@ -576,7 +584,9 @@
         "draft_saved": "Saved draft",
         "type_changed": "Changed document type",
         "confirmed": "Confirmed document",
-        "filed_information_only": "Filed as information only"
+        "filed_information_only": "Filed as information only",
+        "deleted": "Document {id} deleted by user",
+        "file_replaced": "Replaced file"
       },
       "field": {
         "corrected": "Corrected field",
@@ -593,7 +603,8 @@
         "created_manually": "Entered work days manually"
       },
       "settings": {
-        "reminders_changed": "Changed reminder schedule"
+        "reminders_changed": "Changed reminder schedule",
+        "retention_changed": "Changed history retention"
       },
       "documents": {
         "deleted_all": "Deleted all documents"
@@ -605,6 +616,52 @@
       "field": "Field",
       "workEntry": "Work days {month}",
       "settings": "Settings"
+    }
+  },
+  "documents": {
+    "menu": "Actions for {name}",
+    "actions": "Actions",
+    "select": "Select {name}",
+    "selectAll": "Select all",
+    "selected": "{count, plural, one {# document selected} other {# documents selected}}",
+    "clearSelection": "Clear selection",
+    "replace": {
+      "action": "Replace file",
+      "done": "{name} replaced. Processing started again.",
+      "notAllowed": "The file can only be replaced before the document is confirmed and while it is not being processed."
+    },
+    "delete": {
+      "loading": "Counting what will be removed…",
+      "previewFailed": "These documents can no longer be deleted here.",
+      "failed": "Deleting failed. Please try again.",
+      "cancel": "Cancel",
+      "removes": "{count, plural, one {This removes the document and:} other {This removes # documents and:}}",
+      "auditNote": "Entries in the history log keep only that the document was deleted, without any of its content.",
+      "items": {
+        "files": "Original files",
+        "fields": "Extracted fields",
+        "pages": "Recognized pages and words",
+        "openTasks": "Open tasks",
+        "reminders": "Reminders",
+        "completedTasks": "Completed tasks",
+        "workEntries": "Work day entries"
+      },
+      "discard": {
+        "action": "Discard",
+        "selected": "Discard selected",
+        "title": "{count, plural, one {Discard document?} other {Discard # documents?}}",
+        "warning": "The document and everything read from it are removed permanently.",
+        "confirm": "{count, plural, one {Discard document} other {Discard # documents}}",
+        "done": "{count, plural, one {Document discarded.} other {# documents discarded.}}"
+      },
+      "record": {
+        "action": "Delete document",
+        "selected": "Delete selected",
+        "title": "{count, plural, one {Delete document?} other {Delete # documents?}}",
+        "warning": "The document and everything created from it are removed permanently. This cannot be undone.",
+        "confirm": "{count, plural, one {Delete document} other {Delete # documents}}",
+        "done": "{count, plural, one {Document deleted.} other {# documents deleted.}}"
+      }
     }
   }
 }
