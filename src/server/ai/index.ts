@@ -138,6 +138,7 @@ export async function extractFields(
       "For each field return the value as written (do not reformat dates or amounts),",
       "the exact source text it appears in, and your confidence.",
       "If a field is not in the letter, return null for value and sourceText and confidence 0.",
+      "Never return 0 for a count or amount that the letter does not state, and never calculate or estimate one.",
       "",
       `<letter>\n${text}\n</letter>`,
     ].join("\n"),

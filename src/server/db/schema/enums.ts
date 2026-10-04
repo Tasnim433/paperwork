@@ -39,6 +39,9 @@ export const taskStatus = pgEnum("task_status", ["open", "done"]);
 
 export const auditActor = pgEnum("audit_actor", ["system", "ai", "user"]);
 
+/** Where a work entry comes from: a confirmed payslip, or days typed in by the user. */
+export const workEntrySource = pgEnum("work_entry_source", ["payslip", "manual"]);
+
 export type DocumentStatus = (typeof documentStatus.enumValues)[number];
 export type ProcessingStage = (typeof processingStage.enumValues)[number];
 export type DocumentType = (typeof documentType.enumValues)[number];

@@ -5,12 +5,15 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { ManualWorkDaysDialog } from "@/components/data/manual-work-days-dialog";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
 import { isLocale, type Locale } from "@/i18n/config";
+import { needsManualWorkDays } from "@/lib/documents";
 import { formatDate } from "@/lib/format";
 import { displayValue } from "@/lib/review";
 import { documentFields, type DocumentTypeKey } from "@/lib/schemas/document-fields";
+import { periodMonth } from "@/lib/work-days";
 import type { DocumentDetail as Detail } from "@/server/queries/review";
 
 const DocumentViewer = dynamic(() => import("./document-viewer").then((m) => m.DocumentViewer), {
@@ -111,7 +114,20 @@ export function DocumentDetail({ data }: { data: Detail }) {
 
           <section className="border-t border-border px-5 py-[18px]">
             <h3 className="mb-3 text-sm font-semibold">{t("documentDetail.created")}</h3>
-            {data.tasks.length === 0 && data.workEntries.length === 0 ? (
+            {needsManualWorkDays({
+              type: doc.type,
+              status: doc.status,
+              workEntryCount: data.workEntries.length,
+            }) ? (
+              <div className="flex flex-col items-start gap-2">
+                <StatusDot tone="warning">{t("workDays.notStated")}</StatusDot>
+                <p className="text-[13px] text-muted-foreground">{t("workDays.notStatedHint")}</p>
+                <ManualWorkDaysDialog
+                  documentId={doc.id}
+                  defaultMonth={periodMonth(valueOf("period")?.value)}
+                />
+              </div>
+            ) : data.tasks.length === 0 && data.workEntries.length === 0 ? (
               <p className="text-[13px] text-muted-foreground">
                 {t("documentDetail.nothingCreated")}
               </p>
@@ -147,6 +163,11 @@ export function DocumentDetail({ data }: { data: Detail }) {
                       full: entry.fullDays,
                       half: entry.halfDays,
                     })}
+                    {entry.source === "manual" && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {t("workDays.manualLabel")}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

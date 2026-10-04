@@ -21,7 +21,12 @@ export type StoredField = {
   confidence: number | null;
   /** Whether the value was found in the recognized words. */
   located: boolean;
+  /** Marked "not stated in document" by the user (see canBeNotStated). */
+  notStated?: boolean;
 };
+
+/** Rule set on a field the user marked "not stated in document". */
+export const NOT_STATED_RULE = "notStated";
 
 /** How a stored value is shown in the input: dates and amounts in the user's format. */
 export function displayValue(kind: FieldKind, value: string | null, locale: Locale): string {
@@ -130,8 +135,19 @@ export function validateReview(
   values: Record<string, string>,
   locale: Locale,
   accepted: string[] = [],
+  notStated: string[] = [],
 ): FieldResult[] {
-  return validateDocument(type, reviewInputs(type, stored, values, locale, accepted));
+  const results = validateDocument(type, reviewInputs(type, stored, values, locale, accepted));
+  const allowed = new Set(
+    documentFields[type].filter((field) => field.canBeNotStated).map((field) => field.key),
+  );
+  // "Not stated in document" resolves an empty field without inventing a value.
+  // It only applies while the input is empty: typing a value wins.
+  return results.map((result) =>
+    notStated.includes(result.key) && allowed.has(result.key) && result.value === null
+      ? { ...result, value: null, state: "valid", rule: NOT_STATED_RULE }
+      : result,
+  );
 }
 
 /** Fields that identify the same letter arriving twice (in addition to type and sender). */

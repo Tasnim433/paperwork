@@ -14,6 +14,7 @@ export async function listWorkEntries(userId: string) {
       fullDays: workEntries.fullDays,
       halfDays: workEntries.halfDays,
       hours: workEntries.hours,
+      source: workEntries.source,
       documentId: workEntries.documentId,
       documentStatus: documents.status,
       sender: documents.sender,

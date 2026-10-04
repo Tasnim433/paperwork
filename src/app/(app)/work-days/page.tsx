@@ -11,7 +11,7 @@ import { StatusDot } from "@/components/status-dot";
 import { todayIso } from "@/lib/dates";
 import { documentHref } from "@/lib/documents";
 import { cn } from "@/lib/utils";
-import { availableYears, workDaysSummary } from "@/lib/work-days";
+import { availableYears, resolveYear, workDaysSummary, yearsWithData } from "@/lib/work-days";
 import { listWorkEntries } from "@/server/queries/work-days";
 import { requireSession } from "@/server/session";
 
@@ -25,8 +25,12 @@ export default async function WorkDaysPage({ searchParams }: PageProps<"/work-da
 
   const currentYear = Number(todayIso().slice(0, 4));
   const years = availableYears(entries, currentYear);
-  const requested = Number((await searchParams).year);
-  const year = years.includes(requested) ? requested : currentYear;
+  const rawYear = (await searchParams).year;
+  const year = resolveYear(rawYear ? Number(rawYear) : null, entries, currentYear);
+  const defaultYear = resolveYear(null, entries, currentYear);
+  const otherYearsWithData = yearsWithData(entries).filter((value) => value !== year);
+  const yearHref = (value: number) =>
+    value === defaultYear ? "/work-days" : `/work-days?year=${value}`;
   const summary = workDaysSummary(entries, year);
   const sources = entries.filter((entry) => entry.month.startsWith(`${year}-`)).reverse();
 
@@ -51,12 +55,29 @@ export default async function WorkDaysPage({ searchParams }: PageProps<"/work-da
           <FilterTabs
             label={t("yearLabel")}
             tabs={years.map((value) => ({
-              href: value === currentYear ? "/work-days" : `/work-days?year=${value}`,
+              href: yearHref(value),
               label: String(value),
               active: value === year,
             }))}
           />
         </div>
+      )}
+
+      {sources.length === 0 && otherYearsWithData.length > 0 && (
+        <p role="status" className="mb-6 rounded-lg border border-border px-4 py-3 text-[13.5px]">
+          {t("emptyYear", { year })}{" "}
+          {otherYearsWithData.map((value, i) => (
+            <span key={value}>
+              {i > 0 && ", "}
+              <Link
+                href={yearHref(value)}
+                className="font-medium underline underline-offset-4 hover:no-underline"
+              >
+                {value}
+              </Link>
+            </span>
+          ))}
+        </p>
       )}
 
       {summary.level !== "ok" && (
@@ -139,6 +160,7 @@ export default async function WorkDaysPage({ searchParams }: PageProps<"/work-da
                       )}
                       <div className="text-[12.5px] text-muted-foreground">
                         {entry.sender ?? "—"}
+                        {entry.source === "manual" && ` · ${t("manualLabel")}`}
                       </div>
                     </Td>
                     <Td className="text-right whitespace-nowrap tabular-nums">

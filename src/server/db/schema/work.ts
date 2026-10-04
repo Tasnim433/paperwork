@@ -2,6 +2,7 @@ import { date, index, integer, numeric, pgTable, uuid } from "drizzle-orm/pg-cor
 
 import { id, timestamps, userId } from "./columns";
 import { documents } from "./documents";
+import { workEntrySource } from "./enums";
 
 export const workEntries = pgTable(
   "work_entries",
@@ -14,6 +15,7 @@ export const workEntries = pgTable(
     fullDays: integer().notNull().default(0),
     halfDays: integer().notNull().default(0),
     hours: numeric({ precision: 6, scale: 2 }),
+    source: workEntrySource().notNull().default("payslip"),
     ...timestamps,
   },
   (t) => [index().on(t.userId, t.month)],

@@ -2,7 +2,7 @@ import "server-only";
 
 import { and, asc, desc, eq, inArray, ne } from "drizzle-orm";
 
-import { isSameLetter, type StoredField } from "@/lib/review";
+import { isSameLetter, NOT_STATED_RULE, type StoredField } from "@/lib/review";
 import { textMentionsDirectDebit } from "@/lib/task-rules";
 import type { DocumentTypeKey } from "@/lib/schemas/document-fields";
 
@@ -111,6 +111,7 @@ export async function getReviewDocument(userId: string, documentId: string) {
     value: row.value,
     confidence: row.confidence,
     located: row.sourcePage !== null,
+    notStated: row.rule === NOT_STATED_RULE,
   }));
   const boxes = fieldRows
     .filter((row) => row.sourcePage !== null && row.boundingBox)
@@ -178,6 +179,7 @@ export async function getDocumentDetail(userId: string, documentId: string) {
         month: workEntries.month,
         fullDays: workEntries.fullDays,
         halfDays: workEntries.halfDays,
+        source: workEntries.source,
       })
       .from(workEntries)
       .where(and(eq(workEntries.documentId, doc.id), eq(workEntries.userId, userId))),

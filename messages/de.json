@@ -310,7 +310,8 @@
     "state": {
       "valid": "Gültig",
       "check": "Prüfen",
-      "missing": "Fehlt"
+      "missing": "Fehlt",
+      "notStated": "Nicht angegeben"
     },
     "missingPlaceholder": "Nicht gefunden. Eintragen oder im Dokument prüfen",
     "rules": {
@@ -351,7 +352,8 @@
       },
       "confidence": {
         "low": "Mit geringer Sicherheit gelesen. Vergleiche mit dem Original."
-      }
+      },
+      "notStated": "Im Dokument nicht angegeben. Es werden keine Arbeitstage automatisch gezählt; du kannst sie später unter Unterlagen eintragen."
     },
     "checks": {
       "required": "Pflichtfelder vorhanden",
@@ -386,7 +388,8 @@
       },
       "note": "Hinweis",
       "notes": {
-        "directDebit": "Keine Zahlungsaufgabe: Der Betrag wird per Lastschrift eingezogen."
+        "directDebit": "Keine Zahlungsaufgabe: Der Betrag wird per Lastschrift eingezogen.",
+        "workDaysNotStated": "Keine Arbeitstage gezählt: Die Lohnabrechnung nennt sie nicht. Trage sie später unter Unterlagen ein."
       }
     },
     "generated": "Aus dem Dokument erzeugt · kann Fehler enthalten",
@@ -420,7 +423,8 @@
       "description": "Dieses Dokument wartet nicht auf Prüfung. Seinen aktuellen Status siehst du im Posteingang.",
       "back": "Zum Posteingang"
     },
-    "accept": "So übernehmen"
+    "accept": "So übernehmen",
+    "notStated": "Im Dokument nicht angegeben"
   },
   "documentDetail": {
     "title": "Dokument",
@@ -468,6 +472,30 @@
       "tableCaption": "Arbeitstage pro Monat {year}",
       "month": "Monat",
       "usedColumn": "Umgerechnete ganze Tage"
+    },
+    "emptyYear": "Keine Lohnabrechnungen für {year}. Daten gefunden für",
+    "notStated": "Arbeitstage: nicht angegeben",
+    "notStatedHint": "Die Lohnabrechnung nennt keine Tage mit mehr oder weniger als 4 Stunden, daher wurden keine Arbeitstage gezählt.",
+    "manualLabel": "manuell eingetragen",
+    "manual": {
+      "button": "Tage manuell eintragen",
+      "title": "Arbeitstage manuell eintragen",
+      "description": "Für Lohnabrechnungen ohne Tagesangaben, z. B. Monatsgehaltsabrechnungen.",
+      "month": "Monat",
+      "fullDays": "Tage > 4 Std.",
+      "halfDays": "Tage ≤ 4 Std.",
+      "hint": "Zähle anhand deiner eigenen Aufzeichnungen oder Stundenzettel. Zwei halbe Tage ergeben einen ganzen.",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "saved": "Arbeitstage gespeichert.",
+      "errors": {
+        "month": "Wähle den Monat der Lohnabrechnung.",
+        "fullDays": "Gib eine ganze Zahl für Tage > 4 Std. ein.",
+        "halfDays": "Gib eine ganze Zahl für Tage ≤ 4 Std. ein.",
+        "tooManyDays": "Das sind mehr Tage, als der Monat hat.",
+        "notAllowed": "Tage können nur zu einer bestätigten Lohnabrechnung hinzugefügt werden.",
+        "exists": "Für diese Lohnabrechnung gibt es bereits Arbeitstage."
+      }
     }
   },
   "settings": {
@@ -553,14 +581,16 @@
       "field": {
         "corrected": "Feld korrigiert",
         "accepted": "Feld übernommen",
-        "removed": "Feld entfernt"
+        "removed": "Feld entfernt",
+        "marked_not_stated": "Feld als nicht angegeben markiert"
       },
       "task": {
         "created": "Aufgabe erstellt",
         "completed": "Aufgabe erledigt"
       },
       "work_entry": {
-        "created": "Arbeitstage hinzugefügt"
+        "created": "Arbeitstage hinzugefügt",
+        "created_manually": "Arbeitstage manuell eingetragen"
       },
       "settings": {
         "reminders_changed": "Erinnerungen geändert"

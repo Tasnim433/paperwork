@@ -95,3 +95,54 @@ export function availableYears(entries: Pick<WorkEntry, "month">[], currentYear:
   years.add(currentYear);
   return [...years].filter((year) => Number.isInteger(year)).sort((a, b) => b - a);
 }
+
+/** Years that have work entries, newest first. */
+export function yearsWithData(entries: Pick<WorkEntry, "month">[]): number[] {
+  return [...new Set(entries.map((entry) => Number(entry.month.slice(0, 4))))]
+    .filter((year) => Number.isInteger(year))
+    .sort((a, b) => b - a);
+}
+
+/**
+ * The year to show: the requested one if it is offered, otherwise the most
+ * recent year with entries, otherwise the current year.
+ */
+export function resolveYear(
+  requested: number | null,
+  entries: Pick<WorkEntry, "month">[],
+  currentYear: number,
+): number {
+  const offered = availableYears(entries, currentYear);
+  if (requested !== null && offered.includes(requested)) return requested;
+  return yearsWithData(entries)[0] ?? currentYear;
+}
+
+export type ManualEntryError = "month" | "fullDays" | "halfDays" | "tooManyDays";
+
+/**
+ * Checks days typed in by the user for one month: whole numbers, not negative,
+ * and together not more days than the month has.
+ */
+export function validateManualEntry(input: {
+  month: string;
+  fullDays: number;
+  halfDays: number;
+}): ManualEntryError[] {
+  const errors: ManualEntryError[] = [];
+  const match = /^(\d{4})-(\d{2})$/.exec(input.month);
+  const monthNumber = match ? Number(match[2]) : 0;
+  if (!match || monthNumber < 1 || monthNumber > 12) errors.push("month");
+  const isCount = (value: number) => Number.isInteger(value) && value >= 0 && value <= 31;
+  if (!isCount(input.fullDays)) errors.push("fullDays");
+  if (!isCount(input.halfDays)) errors.push("halfDays");
+  if (errors.length === 0) {
+    const daysInMonth = new Date(Date.UTC(Number(match![1]), monthNumber, 0)).getUTCDate();
+    if (input.fullDays + input.halfDays > daysInMonth) errors.push("tooManyDays");
+  }
+  return errors;
+}
+
+/** The payslip period as "YYYY-MM" when it is in that (validated) form, else null. */
+export function periodMonth(period: string | null | undefined): string | null {
+  return period && /^\d{4}-(0[1-9]|1[0-2])$/.test(period) ? period : null;
+}

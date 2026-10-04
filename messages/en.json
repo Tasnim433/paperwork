@@ -310,7 +310,8 @@
     "state": {
       "valid": "Valid",
       "check": "Check",
-      "missing": "Missing"
+      "missing": "Missing",
+      "notStated": "Not stated"
     },
     "missingPlaceholder": "Not found. Enter it or check the document",
     "rules": {
@@ -351,7 +352,8 @@
       },
       "confidence": {
         "low": "Read with low confidence. Compare it with the original."
-      }
+      },
+      "notStated": "Not stated in the document. No work days are counted automatically; you can enter them later in Records."
     },
     "checks": {
       "required": "Required fields present",
@@ -386,7 +388,8 @@
       },
       "note": "Note",
       "notes": {
-        "directDebit": "No payment task: the amount is collected by direct debit."
+        "directDebit": "No payment task: the amount is collected by direct debit.",
+        "workDaysNotStated": "No work days counted: the payslip does not state them. Enter them later in Records."
       }
     },
     "generated": "Generated from the document · may contain errors",
@@ -420,7 +423,8 @@
       "description": "This document is not waiting for review. Its current status is shown in the Inbox.",
       "back": "Back to Inbox"
     },
-    "accept": "Accept as is"
+    "accept": "Accept as is",
+    "notStated": "Not stated in document"
   },
   "documentDetail": {
     "title": "Document",
@@ -468,6 +472,30 @@
       "tableCaption": "Work days per month in {year}",
       "month": "Month",
       "usedColumn": "Full-day equivalents"
+    },
+    "emptyYear": "No payslips for {year}. Found data in",
+    "notStated": "Work days: not stated",
+    "notStatedHint": "The payslip does not list days with more or less than 4 hours, so no work days were counted.",
+    "manualLabel": "entered manually",
+    "manual": {
+      "button": "Enter days manually",
+      "title": "Enter work days manually",
+      "description": "For payslips that do not state them, e.g. monthly salary slips.",
+      "month": "Month",
+      "fullDays": "Days > 4 h",
+      "halfDays": "Days ≤ 4 h",
+      "hint": "Count from your own records or timesheet. Two half days count as one full day.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saved": "Work days saved.",
+      "errors": {
+        "month": "Choose the month the payslip covers.",
+        "fullDays": "Enter a whole number of days > 4 h.",
+        "halfDays": "Enter a whole number of days ≤ 4 h.",
+        "tooManyDays": "That is more days than the month has.",
+        "notAllowed": "Days can only be added to a confirmed payslip.",
+        "exists": "Work days for this payslip already exist."
+      }
     }
   },
   "settings": {
@@ -553,14 +581,16 @@
       "field": {
         "corrected": "Corrected field",
         "accepted": "Accepted field",
-        "removed": "Removed field"
+        "removed": "Removed field",
+        "marked_not_stated": "Marked field as not stated"
       },
       "task": {
         "created": "Created task",
         "completed": "Completed task"
       },
       "work_entry": {
-        "created": "Added work days"
+        "created": "Added work days",
+        "created_manually": "Entered work days manually"
       },
       "settings": {
         "reminders_changed": "Changed reminder schedule"

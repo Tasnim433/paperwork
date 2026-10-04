@@ -172,3 +172,62 @@ describe("nextInQueue", () => {
     expect(nextInQueue(["a", "b"], "x")).toBe("a");
   });
 });
+
+describe("not stated in document (payslips without a day breakdown)", () => {
+  const salarySlip: StoredField[] = [
+    stored("sender", "Café Am Inn GmbH"),
+    stored("period", "2026-09"),
+    stored("total_hours", "80"),
+    stored("full_days", null),
+    stored("half_days", null),
+  ];
+
+  it("treats empty day counts as missing, never as valid", () => {
+    const results = validateReview("payslip", salarySlip, {}, "de");
+    expect(results.find((r) => r.key === "full_days")).toMatchObject({
+      value: null,
+      state: "missing",
+      rule: "required",
+    });
+    expect(canConfirm(results, false)).toBe(false);
+  });
+
+  it("resolves empty day counts marked as not stated, without a value", () => {
+    const results = validateReview("payslip", salarySlip, {}, "de", [], ["full_days", "half_days"]);
+    expect(results.find((r) => r.key === "full_days")).toMatchObject({
+      value: null,
+      state: "valid",
+      rule: "notStated",
+    });
+    expect(canConfirm(results, false)).toBe(true);
+    expect(documentChecks(results, false).every((check) => check.passed)).toBe(true);
+  });
+
+  it("lets a typed value win over the mark", () => {
+    const results = validateReview(
+      "payslip",
+      salarySlip,
+      { full_days: "4" },
+      "de",
+      [],
+      ["full_days"],
+    );
+    expect(results.find((r) => r.key === "full_days")).toMatchObject({
+      value: "4",
+      state: "valid",
+      rule: null,
+    });
+  });
+
+  it("only applies to fields that may be not stated", () => {
+    const results = validateReview(
+      "payslip",
+      [...salarySlip, stored("period", null)],
+      { period: "" },
+      "de",
+      [],
+      ["period"],
+    );
+    expect(results.find((r) => r.key === "period")?.state).toBe("missing");
+  });
+});

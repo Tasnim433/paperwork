@@ -29,6 +29,13 @@
       "when": 1791108805788,
       "tag": "0003_task_completion_note",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791112677820,
+      "tag": "0004_work_entry_source",
+      "breakpoints": true
     }
   ]
 }

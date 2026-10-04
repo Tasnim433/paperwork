@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { availableYears, levelFor, workDaysSummary, type WorkEntry } from "./work-days";
+import {
+  availableYears,
+  levelFor,
+  periodMonth,
+  resolveYear,
+  validateManualEntry,
+  workDaysSummary,
+  yearsWithData,
+  type WorkEntry,
+} from "./work-days";
 
 const entry = (month: string, fullDays: number, halfDays: number): WorkEntry => ({
   month,
@@ -65,5 +74,60 @@ describe("availableYears", () => {
       2026, 2025,
     ]);
     expect(availableYears([], 2026)).toEqual([2026]);
+  });
+});
+
+describe("resolveYear / yearsWithData", () => {
+  const entries = [{ month: "2025-11-01" }, { month: "2024-03-01" }, { month: "2025-02-01" }];
+
+  it("defaults to the most recent year with entries, not the current year", () => {
+    expect(resolveYear(null, entries, 2026)).toBe(2025);
+    expect(yearsWithData(entries)).toEqual([2025, 2024]);
+  });
+
+  it("uses the requested year when it is offered", () => {
+    expect(resolveYear(2024, entries, 2026)).toBe(2024);
+    expect(resolveYear(2026, entries, 2026)).toBe(2026);
+  });
+
+  it("ignores years that are not offered", () => {
+    expect(resolveYear(1999, entries, 2026)).toBe(2025);
+  });
+
+  it("falls back to the current year without entries", () => {
+    expect(resolveYear(null, [], 2026)).toBe(2026);
+    expect(yearsWithData([])).toEqual([]);
+  });
+});
+
+describe("validateManualEntry", () => {
+  it("accepts whole days that fit into the month", () => {
+    expect(validateManualEntry({ month: "2026-09", fullDays: 3, halfDays: 11 })).toEqual([]);
+    expect(validateManualEntry({ month: "2026-09", fullDays: 0, halfDays: 0 })).toEqual([]);
+  });
+
+  it("rejects invalid months and counts", () => {
+    expect(validateManualEntry({ month: "2026-13", fullDays: 1, halfDays: 1 })).toEqual(["month"]);
+    expect(validateManualEntry({ month: "09/2026", fullDays: 1, halfDays: 1 })).toEqual(["month"]);
+    expect(validateManualEntry({ month: "2026-09", fullDays: -1, halfDays: 1.5 })).toEqual([
+      "fullDays",
+      "halfDays",
+    ]);
+  });
+
+  it("rejects more days than the month has", () => {
+    expect(validateManualEntry({ month: "2026-02", fullDays: 20, halfDays: 9 })).toEqual([
+      "tooManyDays",
+    ]);
+    expect(validateManualEntry({ month: "2028-02", fullDays: 20, halfDays: 9 })).toEqual([]); // leap year
+  });
+});
+
+describe("periodMonth", () => {
+  it("returns validated payslip periods only", () => {
+    expect(periodMonth("2026-09")).toBe("2026-09");
+    expect(periodMonth("09/2026")).toBeNull();
+    expect(periodMonth("2026-13")).toBeNull();
+    expect(periodMonth(null)).toBeNull();
   });
 });

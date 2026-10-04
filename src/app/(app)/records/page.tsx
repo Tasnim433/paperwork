@@ -2,11 +2,15 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { FilterTabs } from "@/components/data/filter-tabs";
+import { ManualWorkDaysDialog } from "@/components/data/manual-work-days-dialog";
 import { RecordsSearch } from "@/components/data/records-search";
 import { desktopOnly, EmptyState, Table, Td, Th } from "@/components/data/table";
 import { PageHeader } from "@/components/page-header";
+import { StatusDot } from "@/components/status-dot";
 import { pageMetadata } from "@/components/placeholder-page";
+import { needsManualWorkDays } from "@/lib/documents";
 import { formatDate } from "@/lib/format";
+import { periodMonth } from "@/lib/work-days";
 import type { DocumentType } from "@/server/db/schema";
 import { listRecords, listRecordTypes, parseDocumentType } from "@/server/queries/documents";
 import { requireSession } from "@/server/session";
@@ -76,7 +80,20 @@ export default async function RecordsPage({ searchParams }: PageProps<"/records"
                     {record.sender ?? t("common.unknownSender")}
                   </Link>
                 </Td>
-                <Td>{t(`documentType.${record.type ?? "unknown"}`)}</Td>
+                <Td>
+                  {t(`documentType.${record.type ?? "unknown"}`)}
+                  {needsManualWorkDays(record) && (
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <StatusDot tone="warning" className="text-[12.5px]">
+                        {t("workDays.notStated")}
+                      </StatusDot>
+                      <ManualWorkDaysDialog
+                        documentId={record.id}
+                        defaultMonth={periodMonth(record.period)}
+                      />
+                    </div>
+                  )}
+                </Td>
                 <Td className={`${desktopOnly} font-mono text-xs text-muted-foreground`}>
                   {record.reference ?? "—"}
                 </Td>

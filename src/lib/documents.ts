@@ -6,3 +6,14 @@ export function documentHref(document: { id: string; status: string }): string {
   }
   return "/inbox";
 }
+
+/** A confirmed payslip whose work days were not stated and not entered yet. */
+export function needsManualWorkDays(document: {
+  type: string | null;
+  status: string;
+  workEntryCount: number;
+}): boolean {
+  return (
+    document.type === "payslip" && document.status === "confirmed" && document.workEntryCount === 0
+  );
+}

@@ -5,6 +5,7 @@
 import { and, asc, eq } from "drizzle-orm";
 
 import { defaultLocale, isLocale } from "@/i18n/config";
+import { sanitizeDayBreakdown } from "@/lib/payslip";
 import { pageTextFromWords } from "@/lib/text/pdf-words";
 import { locateValue } from "@/lib/text/locate";
 import type { PageText } from "@/lib/text/types";
@@ -132,7 +133,9 @@ export async function extract(ref: Ref) {
   const doc = await loadDocument(ref);
   const type = (doc.type ?? "other") as DocumentTypeKey;
   const { pages, text } = await loadPages(ref);
-  const values = await extractFields(type, text);
+  const extracted = await extractFields(type, text);
+  // Payslips without a day breakdown: "0 / 0 days" from the model becomes empty.
+  const values = type === "payslip" ? sanitizeDayBreakdown(extracted) : extracted;
 
   const rows = documentFields[type].map((definition) => {
     const extracted = values[definition.key];

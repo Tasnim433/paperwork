@@ -15,6 +15,7 @@ import {
   canConfirm,
   editedKeys,
   nextInQueue,
+  NOT_STATED_RULE,
   validateReview,
   type StoredField,
 } from "@/lib/review";
@@ -42,6 +43,8 @@ const reviewInput = z.object({
   values: z.record(z.string().max(64), z.string().max(1000)),
   /** Fields the user accepted as they are (see ACCEPTABLE_RULES). */
   accepted: z.array(z.string().max(64)).max(50).default([]),
+  /** Fields marked "not stated in document" (only fields that allow it). */
+  notStated: z.array(z.string().max(64)).max(50).default([]),
 });
 
 export type ReviewInput = z.input<typeof reviewInput>;
@@ -126,12 +129,17 @@ function fieldStatements(
           .where(eq(extractedFields.id, row.id)),
       );
       const isAccepted = !isEdited && accepted.includes(result.key) && row.state !== result.state;
-      if (isEdited || isAccepted) {
+      const isMarkedNotStated = result.rule === NOT_STATED_RULE && row.rule !== NOT_STATED_RULE;
+      if (isEdited || isAccepted || isMarkedNotStated) {
         statements.push(
           auditInsert({
             userId,
             actor: "user",
-            action: isEdited ? "field.corrected" : "field.accepted",
+            action: isMarkedNotStated
+              ? "field.marked_not_stated"
+              : isEdited
+                ? "field.corrected"
+                : "field.accepted",
             entityType: "field",
             entityId: row.id,
             before: { documentId: doc.id, key: row.key, value: row.value, state: row.state },
@@ -205,14 +213,14 @@ async function prepare(input: ReviewInput) {
   if (!loaded) return { error: "notReviewable" as const };
 
   const locale = await currentLocale();
-  const { type, values, accepted } = parsed.data;
+  const { type, values, accepted, notStated } = parsed.data;
   const stored: StoredField[] = loaded.rows.map((row) => ({
     key: row.key,
     value: row.value,
     confidence: row.confidence,
     located: row.sourcePage !== null,
   }));
-  const results = validateReview(type, stored, values, locale, accepted);
+  const results = validateReview(type, stored, values, locale, accepted, notStated);
   const edited = editedKeys(type, stored, values, locale);
   const statements = fieldStatements(
     user.id,

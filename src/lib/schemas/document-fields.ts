@@ -24,6 +24,8 @@ export type FieldDefinition = {
   required: boolean;
   /** Instruction for the model: what to look for. */
   description: string;
+  /** May be marked "not stated in document" in Review (payslips without a day breakdown). */
+  canBeNotStated?: boolean;
 };
 
 const field = (
@@ -83,8 +85,24 @@ export const documentFields: Record<DocumentTypeKey, FieldDefinition[]> = {
     field("sender", "text", "Employer that issued the payslip.", true),
     field("period", "month", "Month the payslip covers.", true),
     field("total_hours", "number", "Total hours worked in the period."),
-    field("full_days", "integer", "Number of days with more than 4 hours of work.", true),
-    field("half_days", "integer", "Number of days with 4 hours of work or less.", true),
+    {
+      ...field(
+        "full_days",
+        "integer",
+        "Number of days with more than 4 hours of work, only if the payslip states it or lists hours per day. Monthly salary slips usually do not: then return null. Never return 0 for a number that is not stated, and never estimate.",
+        true,
+      ),
+      canBeNotStated: true,
+    },
+    {
+      ...field(
+        "half_days",
+        "integer",
+        "Number of days with 4 hours of work or less, only if the payslip states it or lists hours per day. Monthly salary slips usually do not: then return null. Never return 0 for a number that is not stated, and never estimate.",
+        true,
+      ),
+      canBeNotStated: true,
+    },
     field("gross_pay", "amount", "Gross pay for the period."),
     field("net_pay", "amount", "Net pay for the period."),
   ],

@@ -169,3 +169,23 @@ describe("reminderDates", () => {
     expect(reminderDates(null, [7], "2026-10-04")).toEqual([]);
   });
 });
+
+describe("payslip without day breakdown", () => {
+  it("creates no work entry when the days are not stated, only a note", () => {
+    const actions = tasksForDocument(
+      "payslip",
+      fields({ period: "2026-09", total_hours: "80", full_days: null, half_days: null }),
+      options,
+    );
+    expect(actions).toEqual([{ kind: "note", reason: "workDaysNotStated" }, { kind: "record" }]);
+  });
+
+  it("never turns missing days into 0", () => {
+    const actions = tasksForDocument(
+      "payslip",
+      fields({ period: "2026-09", full_days: "3", half_days: null }),
+      options,
+    );
+    expect(actions.some((a) => a.kind === "workDays")).toBe(false);
+  });
+});

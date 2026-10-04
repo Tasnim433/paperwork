@@ -7,7 +7,7 @@
  *   appointment      -> attend (on the date) + prepare (the day before)
  *   decision_letter  -> respond, if a response deadline exists
  *   other            -> respond, if a deadline exists
- *   payslip          -> work-day entry, no task
+ *   payslip          -> work-day entry, no task (none if the days are not stated)
  *   contract         -> nothing
  *   information_only -> nothing
  */
@@ -34,7 +34,7 @@ export type PlannedAction =
   | PlannedTask
   | { kind: "workDays"; month: string; fullDays: number; halfDays: number; hours: string | null }
   /** Shown instead of a task, e.g. "no payment task: paid by direct debit". */
-  | { kind: "note"; reason: "directDebit" }
+  | { kind: "note"; reason: "directDebit" | "workDaysNotStated" }
   | { kind: "record" };
 
 export type RuleOptions = {
@@ -161,12 +161,17 @@ export function tasksForDocument(
     }
     case "payslip": {
       const month = get("period");
-      if (month) {
+      const full = get("full_days");
+      const half = get("half_days");
+      // No day breakdown on the payslip: nothing is counted automatically.
+      if (full === null || half === null) {
+        actions.push({ kind: "note", reason: "workDaysNotStated" });
+      } else if (month) {
         actions.push({
           kind: "workDays",
           month,
-          fullDays: Number(get("full_days") ?? 0),
-          halfDays: Number(get("half_days") ?? 0),
+          fullDays: Number(full),
+          halfDays: Number(half),
           hours: get("total_hours"),
         });
       }

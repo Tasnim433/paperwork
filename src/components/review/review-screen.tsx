@@ -12,7 +12,14 @@ import { useUpload } from "@/components/upload/upload-provider";
 import { isLocale, type Locale } from "@/i18n/config";
 import { todayIso } from "@/lib/dates";
 import { formatCurrency, formatDate } from "@/lib/format";
-import { canAccept, canConfirm, displayValue, documentChecks, validateReview } from "@/lib/review";
+import {
+  canAccept,
+  canConfirm,
+  displayValue,
+  documentChecks,
+  NOT_STATED_RULE,
+  validateReview,
+} from "@/lib/review";
 import { tasksForDocument, type PlannedAction } from "@/lib/task-rules";
 import { documentFields, documentTypes, type DocumentTypeKey } from "@/lib/schemas/document-fields";
 import { parseAmountCents } from "@/lib/validation/parse";
@@ -64,12 +71,16 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
   const [reprocessArmed, setReprocessArmed] = useState(false);
   /** Fields whose value the user accepted as it is (only "compare with the original" flags). */
   const [accepted, setAccepted] = useState<string[]>([]);
+  /** Fields marked "not stated in document" (payslips without a day breakdown). */
+  const [notStated, setNotStated] = useState<string[]>(() =>
+    stored.filter((field) => field.notStated).map((field) => field.key),
+  );
   const inputs = useRef(new Map<string, HTMLInputElement>());
 
   const definitions = documentFields[type];
   const results = useMemo(
-    () => validateReview(type, stored, values, locale, accepted),
-    [type, stored, values, locale, accepted],
+    () => validateReview(type, stored, values, locale, accepted, notStated),
+    [type, stored, values, locale, accepted, notStated],
   );
   const resultByKey = useMemo(() => new Map(results.map((r) => [r.key, r])), [results]);
   const validCount = results.filter((r) => r.state === "valid").length;
@@ -94,6 +105,7 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
     type,
     values: Object.fromEntries(definitions.map((d) => [d.key, values[d.key] ?? ""])),
     accepted,
+    notStated,
   });
 
   const handleResult = useCallback(
@@ -134,7 +146,14 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
       true,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps -- input() reads current state
-  }, [confirmable, pending, run, t, type, values, accepted]);
+  }, [confirmable, pending, run, t, type, values, accepted, notStated]);
+
+  const toggleNotStated = (key: string, checked: boolean) => {
+    setNotStated((current) =>
+      checked ? [...new Set([...current, key])] : current.filter((k) => k !== key),
+    );
+    if (checked) setValues((current) => ({ ...current, [key]: "" }));
+  };
 
   const accept = (key: string) =>
     setAccepted((current) => (current.includes(key) ? current : [...current, key]));
@@ -268,6 +287,7 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
                 {definitions.map((definition) => {
                   const result = resultByKey.get(definition.key);
                   const state = result?.state ?? "missing";
+                  const isNotStated = result?.rule === NOT_STATED_RULE;
                   const id = `field-${definition.key}`;
                   const hintId = `${id}-hint`;
                   return (
@@ -290,6 +310,7 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
                           else inputs.current.delete(definition.key);
                         }}
                         value={values[definition.key] ?? ""}
+                        disabled={isNotStated}
                         onChange={(event) =>
                           setValues((current) => ({
                             ...current,
@@ -311,21 +332,28 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
                         aria-invalid={state !== "valid"}
                         aria-describedby={result?.rule ? hintId : undefined}
                         className={cn(
-                          "h-9 w-full min-w-0 rounded-lg border bg-background px-2.5 text-[13.5px] outline-none focus-visible:ring-3 focus-visible:ring-ring/30",
+                          "h-9 w-full min-w-0 rounded-lg border bg-background px-2.5 text-[13.5px] outline-none focus-visible:ring-3 focus-visible:ring-ring/30 disabled:bg-muted disabled:text-muted-foreground",
                           state === "valid" && "border-input focus-visible:border-ring",
                           state === "check" && "border-warning",
                           state === "missing" && "border-danger",
                         )}
                       />
-                      <StatusDot tone={stateTone[state]} className="justify-self-end">
-                        {t(`review.state.${state}`)}
+                      <StatusDot
+                        tone={isNotStated ? "neutral" : stateTone[state]}
+                        className="justify-self-end"
+                      >
+                        {isNotStated ? t("review.state.notStated") : t(`review.state.${state}`)}
                       </StatusDot>
                       {result?.rule && (
                         <p
                           id={hintId}
                           className={cn(
                             "col-span-2 -mt-0.5 flex flex-wrap items-baseline gap-x-2 text-xs desktop:col-start-2 desktop:col-end-4",
-                            state === "missing" ? "text-danger" : "text-warning",
+                            isNotStated
+                              ? "text-muted-foreground"
+                              : state === "missing"
+                                ? "text-danger"
+                                : "text-warning",
                           )}
                         >
                           {t(`review.rules.${result.rule}` as "review.rules.required")}
@@ -339,6 +367,19 @@ export function ReviewScreen({ data }: { data: ReviewData }) {
                             </button>
                           )}
                         </p>
+                      )}
+                      {definition.canBeNotStated && (
+                        <label className="col-span-2 flex items-center gap-2 text-xs text-ink-2 desktop:col-start-2 desktop:col-end-4">
+                          <input
+                            type="checkbox"
+                            checked={notStated.includes(definition.key)}
+                            onChange={(event) =>
+                              toggleNotStated(definition.key, event.target.checked)
+                            }
+                            className="size-3.5 accent-[var(--brand)]"
+                          />
+                          {t("review.notStated")}
+                        </label>
                       )}
                     </div>
                   );

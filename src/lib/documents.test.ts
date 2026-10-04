@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { documentHref } from "./documents";
+import { documentHref, needsManualWorkDays } from "./documents";
 
 describe("documentHref", () => {
   it("opens documents waiting for review in Review", () => {
@@ -15,5 +15,25 @@ describe("documentHref", () => {
   it("sends documents still processing or failed to the Inbox", () => {
     expect(documentHref({ id: "a", status: "processing" })).toBe("/inbox");
     expect(documentHref({ id: "a", status: "failed" })).toBe("/inbox");
+  });
+});
+
+describe("needsManualWorkDays", () => {
+  it("is true for confirmed payslips without a work entry", () => {
+    expect(needsManualWorkDays({ type: "payslip", status: "confirmed", workEntryCount: 0 })).toBe(
+      true,
+    );
+  });
+
+  it("is false once days exist, for other types and before confirmation", () => {
+    expect(needsManualWorkDays({ type: "payslip", status: "confirmed", workEntryCount: 1 })).toBe(
+      false,
+    );
+    expect(needsManualWorkDays({ type: "invoice", status: "confirmed", workEntryCount: 0 })).toBe(
+      false,
+    );
+    expect(
+      needsManualWorkDays({ type: "payslip", status: "needs_review", workEntryCount: 0 }),
+    ).toBe(false);
   });
 });

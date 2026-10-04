@@ -3,7 +3,14 @@ import "server-only";
 import { and, count, desc, eq, ilike, inArray, ne, or, sql } from "drizzle-orm";
 
 import { db } from "../db";
-import { documentType, documents, extractedFields, tasks, type DocumentType } from "../db/schema";
+import {
+  documentType,
+  documents,
+  extractedFields,
+  tasks,
+  workEntries,
+  type DocumentType,
+} from "../db/schema";
 
 const inboxStatuses = ["received", "processing", "needs_review", "failed"] as const;
 
@@ -63,6 +70,19 @@ export async function listRecords(userId: string, filters: { type?: DocumentType
     .groupBy(tasks.documentId)
     .as("task_counts");
 
+  const period = db
+    .select({ documentId: extractedFields.documentId, value: extractedFields.value })
+    .from(extractedFields)
+    .where(and(eq(extractedFields.userId, userId), eq(extractedFields.key, "period")))
+    .as("period");
+
+  const workCounts = db
+    .select({ documentId: workEntries.documentId, count: count().as("work_count") })
+    .from(workEntries)
+    .where(eq(workEntries.userId, userId))
+    .groupBy(workEntries.documentId)
+    .as("work_counts");
+
   const q = filters.q?.trim();
   const pattern = q ? `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%` : undefined;
 
@@ -70,14 +90,19 @@ export async function listRecords(userId: string, filters: { type?: DocumentType
     .select({
       id: documents.id,
       type: documents.type,
+      status: documents.status,
       sender: documents.sender,
       receivedDate: documents.receivedDate,
       reference: reference.value,
+      period: period.value,
       taskCount: sql<number>`coalesce(${taskCounts.count}, 0)`.mapWith(Number),
+      workEntryCount: sql<number>`coalesce(${workCounts.count}, 0)`.mapWith(Number),
     })
     .from(documents)
     .leftJoin(reference, eq(reference.documentId, documents.id))
+    .leftJoin(period, eq(period.documentId, documents.id))
     .leftJoin(taskCounts, eq(taskCounts.documentId, documents.id))
+    .leftJoin(workCounts, eq(workCounts.documentId, documents.id))
     .where(
       and(
         eq(documents.userId, userId),
