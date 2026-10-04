@@ -241,5 +241,170 @@
       "unknown": "Etwas ist schiefgelaufen.",
       "queue_not_running": "Verarbeitungsdienst läuft nicht, starte ihn mit pnpm dev:all"
     }
+  },
+  "fields": {
+    "sender": "Absender",
+    "letter_date": "Briefdatum",
+    "amount": "Betrag",
+    "due_date": "Fällig am",
+    "reference": "Referenz",
+    "iban": "IBAN",
+    "period": "Zeitraum",
+    "appointment_date": "Termin",
+    "time": "Uhrzeit",
+    "location": "Ort",
+    "bring": "Mitbringen",
+    "case_number": "Aktenzeichen",
+    "subject": "Betreff",
+    "decision": "Entscheidung",
+    "response_deadline": "Antwortfrist",
+    "start_date": "Beginn",
+    "end_date": "Ende",
+    "notice_period": "Kündigungsfrist",
+    "monthly_amount": "Monatlicher Betrag",
+    "total_hours": "Stunden gesamt",
+    "full_days": "Tage > 4 Std.",
+    "half_days": "Tage ≤ 4 Std.",
+    "gross_pay": "Bruttoverdienst",
+    "net_pay": "Nettoverdienst",
+    "deadline": "Frist"
+  },
+  "review": {
+    "back": "Zurück",
+    "previous": "Vorheriges",
+    "next": "Nächstes",
+    "progress": "{valid} von {total} Feldern gültig",
+    "queuePosition": "{position} von {total}",
+    "viewer": {
+      "label": "Originaldokument",
+      "zoomIn": "Vergrößern",
+      "zoomOut": "Verkleinern",
+      "page": "Seite {page} von {pages}",
+      "loading": "Dokument wird geladen …",
+      "error": "Das Dokument konnte nicht angezeigt werden.",
+      "highlight": "Feld {field} anzeigen"
+    },
+    "meta": {
+      "sender": "Absender",
+      "received": "Eingegangen",
+      "file": "Datei"
+    },
+    "sections": {
+      "type": "Dokumentart",
+      "fields": "Felder",
+      "checks": "Prüfungen",
+      "creates": "Bei Bestätigung wird erstellt",
+      "summary": "Zusammenfassung"
+    },
+    "toResolve": "{count} offen",
+    "allValid": "Alle gültig",
+    "state": {
+      "valid": "Gültig",
+      "check": "Prüfen",
+      "missing": "Fehlt"
+    },
+    "missingPlaceholder": "Nicht gefunden. Eintragen oder im Dokument prüfen",
+    "rules": {
+      "required": "Pflichtfeld. Im Dokument nicht gefunden.",
+      "date": {
+        "invalid": "Kein gültiges Datum. Verwende 15.11.2026 oder 2026-11-15.",
+        "beforeLetterDate": "Die Frist liegt vor dem Briefdatum."
+      },
+      "time": {
+        "invalid": "Keine gültige Uhrzeit. Verwende HH:MM, z. B. 09:30."
+      },
+      "month": {
+        "invalid": "Kein gültiger Monat. Verwende MM/JJJJ, z. B. 09/2026."
+      },
+      "amount": {
+        "invalid": "Kein gültiger Betrag. Verwende z. B. 132,48.",
+        "negative": "Der Betrag ist negativ."
+      },
+      "iban": {
+        "invalid": "Die Prüfziffer der IBAN stimmt nicht. Vergleiche sie mit dem Brief."
+      },
+      "reference": {
+        "format": "Ungewöhnliches Format: Buchstaben, Ziffern und Trennzeichen, mindestens eine Ziffer.",
+        "healthInsurance": "Erwartet: ein Buchstabe gefolgt von 9 Ziffern.",
+        "broadcastingFee": "Erwartet: 9-stellige Beitragsnummer."
+      },
+      "integer": {
+        "invalid": "Gib eine ganze Zahl ein."
+      },
+      "number": {
+        "invalid": "Gib eine Zahl ein, z. B. 63,5."
+      },
+      "text": {
+        "empty": "Gib einen Wert ein."
+      },
+      "source": {
+        "notFound": "Nicht im Dokumenttext gefunden. Vergleiche mit dem Original."
+      },
+      "confidence": {
+        "low": "Mit geringer Sicherheit gelesen. Vergleiche mit dem Original."
+      }
+    },
+    "checks": {
+      "required": "Pflichtfelder vorhanden",
+      "formats": "Formate gültig (Daten, Beträge, IBAN, Referenzen)",
+      "found": "Werte im Dokument gefunden",
+      "deadline": "Frist nach dem Briefdatum",
+      "duplicate": "Kein doppeltes Dokument gefunden",
+      "passed": "Bestanden",
+      "failed": "Fehlgeschlagen"
+    },
+    "creates": {
+      "task": "Aufgabe",
+      "reminders": "Erinnerungen",
+      "workDays": "Arbeitstage",
+      "record": "Unterlage",
+      "recordText": "Mit dem Original in Unterlagen gespeichert",
+      "workDaysText": "{month}: +{full} ganze, +{half} halbe Tage",
+      "noDate": "Kein Datum",
+      "kinds": {
+        "pay": "Zahlen",
+        "attend": "Termin",
+        "prepare": "Vorbereiten",
+        "respond": "Antworten"
+      },
+      "titles": {
+        "pay": "{amount} an {sender} zahlen",
+        "attend": "Termin wahrnehmen, {location}, {time}",
+        "prepare": "Vorbereiten: {items}",
+        "respond": "{sender} antworten",
+        "handle": "Schreiben von {sender} erledigen"
+      }
+    },
+    "generated": "Aus dem Dokument erzeugt · kann Fehler enthalten",
+    "noSummary": "Keine Zusammenfassung vorhanden.",
+    "actions": {
+      "confirm": "Dokument bestätigen",
+      "saveDraft": "Entwurf speichern",
+      "informationOnly": "Nur zur Information",
+      "reprocess": "Neu verarbeiten",
+      "reprocessConfirm": "Zum Neuverarbeiten erneut klicken"
+    },
+    "hints": {
+      "tab": "nächstes Feld",
+      "enter": "nächstes offenes Feld",
+      "confirm": "Dokument bestätigen",
+      "nav": "nächstes / vorheriges"
+    },
+    "messages": {
+      "saved": "Entwurf gespeichert.",
+      "confirmed": "Bestätigt. {count, plural, =0 {Keine Aufgaben erstellt.} one {# Aufgabe erstellt.} other {# Aufgaben erstellt.}}",
+      "informationOnly": "Als Information abgelegt. Keine Aufgaben erstellt.",
+      "reprocessing": "Die Verarbeitung wurde neu gestartet.",
+      "notReviewable": "Dieses Dokument wartet nicht mehr auf Prüfung.",
+      "notConfirmable": "Löse alle Felder und Prüfungen, bevor du bestätigst.",
+      "invalid": "Die Eingabe konnte nicht gelesen werden. Bitte versuche es erneut.",
+      "queue": "Die Verarbeitung konnte nicht gestartet werden.",
+      "failed": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "notReviewable": {
+      "title": "Wartet nicht auf Prüfung",
+      "description": "Dieses Dokument wartet nicht auf Prüfung. Seinen aktuellen Status siehst du im Posteingang.",
+      "back": "Zum Posteingang"
+    }
   }
 }

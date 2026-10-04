@@ -14,6 +14,8 @@ type UploadContextValue = {
   openPicker: () => void;
   uploadFiles: (files: FileList | File[]) => Promise<void>;
   uploading: boolean;
+  /** Shows a short message in the toast at the bottom of the screen. */
+  notify: (text: string, tone?: "default" | "danger") => void;
 };
 
 const UploadContext = createContext<UploadContextValue | null>(null);
@@ -105,7 +107,7 @@ export function UploadProvider({ children }: { children: React.ReactNode }) {
   const openPicker = useCallback(() => input.current?.click(), []);
 
   return (
-    <UploadContext.Provider value={{ openPicker, uploadFiles, uploading }}>
+    <UploadContext.Provider value={{ openPicker, uploadFiles, uploading, notify: show }}>
       {children}
       <input
         ref={input}

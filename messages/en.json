@@ -241,5 +241,170 @@
       "unknown": "Something went wrong.",
       "queue_not_running": "Processing service not running, start it with pnpm dev:all"
     }
+  },
+  "fields": {
+    "sender": "Sender",
+    "letter_date": "Letter date",
+    "amount": "Amount",
+    "due_date": "Due date",
+    "reference": "Reference",
+    "iban": "IBAN",
+    "period": "Period",
+    "appointment_date": "Appointment date",
+    "time": "Time",
+    "location": "Location",
+    "bring": "Bring",
+    "case_number": "Case number",
+    "subject": "Subject",
+    "decision": "Decision",
+    "response_deadline": "Response deadline",
+    "start_date": "Start date",
+    "end_date": "End date",
+    "notice_period": "Notice period",
+    "monthly_amount": "Monthly amount",
+    "total_hours": "Total hours",
+    "full_days": "Days > 4 h",
+    "half_days": "Days ≤ 4 h",
+    "gross_pay": "Gross pay",
+    "net_pay": "Net pay",
+    "deadline": "Deadline"
+  },
+  "review": {
+    "back": "Back",
+    "previous": "Previous",
+    "next": "Next",
+    "progress": "{valid} of {total} fields valid",
+    "queuePosition": "{position} of {total}",
+    "viewer": {
+      "label": "Original document",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "page": "Page {page} of {pages}",
+      "loading": "Loading document…",
+      "error": "The document could not be displayed.",
+      "highlight": "Show the field {field}"
+    },
+    "meta": {
+      "sender": "Sender",
+      "received": "Received",
+      "file": "File"
+    },
+    "sections": {
+      "type": "Document type",
+      "fields": "Fields",
+      "checks": "Checks",
+      "creates": "On confirmation this creates",
+      "summary": "Summary"
+    },
+    "toResolve": "{count, plural, one {# to resolve} other {# to resolve}}",
+    "allValid": "All valid",
+    "state": {
+      "valid": "Valid",
+      "check": "Check",
+      "missing": "Missing"
+    },
+    "missingPlaceholder": "Not found. Enter it or check the document",
+    "rules": {
+      "required": "Required. Not found in the document.",
+      "date": {
+        "invalid": "Not a valid date. Use 15.11.2026 or 2026-11-15.",
+        "beforeLetterDate": "The deadline is before the letter date."
+      },
+      "time": {
+        "invalid": "Not a valid time. Use HH:MM, e.g. 09:30."
+      },
+      "month": {
+        "invalid": "Not a valid month. Use MM/YYYY, e.g. 09/2026."
+      },
+      "amount": {
+        "invalid": "Not a valid amount. Use e.g. 132,48.",
+        "negative": "The amount is negative."
+      },
+      "iban": {
+        "invalid": "The IBAN checksum is wrong. Compare it with the letter."
+      },
+      "reference": {
+        "format": "Unusual reference format: letters, digits and separators, with at least one digit.",
+        "healthInsurance": "Expected one letter followed by 9 digits.",
+        "broadcastingFee": "Expected a 9-digit contribution number."
+      },
+      "integer": {
+        "invalid": "Enter a whole number."
+      },
+      "number": {
+        "invalid": "Enter a number, e.g. 63,5."
+      },
+      "text": {
+        "empty": "Enter a value."
+      },
+      "source": {
+        "notFound": "Not found in the document text. Compare it with the original."
+      },
+      "confidence": {
+        "low": "Read with low confidence. Compare it with the original."
+      }
+    },
+    "checks": {
+      "required": "Required fields present",
+      "formats": "Formats valid (dates, amounts, IBAN, references)",
+      "found": "Values found in the document",
+      "deadline": "Deadline after letter date",
+      "duplicate": "No duplicate document found",
+      "passed": "Passed",
+      "failed": "Failed"
+    },
+    "creates": {
+      "task": "Task",
+      "reminders": "Reminders",
+      "workDays": "Work days",
+      "record": "Record",
+      "recordText": "Saved in Records with the original",
+      "workDaysText": "{month}: +{full} full, +{half} half days",
+      "noDate": "No date",
+      "kinds": {
+        "pay": "Pay",
+        "attend": "Attend",
+        "prepare": "Prepare",
+        "respond": "Respond"
+      },
+      "titles": {
+        "pay": "Pay {amount} to {sender}",
+        "attend": "Attend appointment, {location}, {time}",
+        "prepare": "Prepare: {items}",
+        "respond": "Respond to {sender}",
+        "handle": "Handle letter from {sender}"
+      }
+    },
+    "generated": "Generated from the document · may contain errors",
+    "noSummary": "No summary available.",
+    "actions": {
+      "confirm": "Confirm document",
+      "saveDraft": "Save draft",
+      "informationOnly": "Information only",
+      "reprocess": "Reprocess",
+      "reprocessConfirm": "Click again to reprocess"
+    },
+    "hints": {
+      "tab": "next field",
+      "enter": "next field to check",
+      "confirm": "confirm document",
+      "nav": "next / previous"
+    },
+    "messages": {
+      "saved": "Draft saved.",
+      "confirmed": "Confirmed. {count, plural, =0 {No tasks created.} one {# task created.} other {# tasks created.}}",
+      "informationOnly": "Filed as information only. No tasks created.",
+      "reprocessing": "Processing started again.",
+      "notReviewable": "This document is no longer waiting for review.",
+      "notConfirmable": "Resolve all fields and checks before confirming.",
+      "invalid": "The input could not be read. Please try again.",
+      "queue": "Processing could not be started.",
+      "failed": "Something went wrong. Please try again."
+    },
+    "notReviewable": {
+      "title": "Not waiting for review",
+      "description": "This document is not waiting for review. Its current status is shown in the Inbox.",
+      "back": "Back to Inbox"
+    }
   }
 }
