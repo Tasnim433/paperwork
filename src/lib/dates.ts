@@ -61,3 +61,18 @@ export function timeOfDay(now: Date = new Date()): TimeOfDay {
   if (hour >= 12 && hour < 18) return "afternoon";
   return "evening";
 }
+
+/** The instant of a wall-clock time on a calendar date in Germany, e.g. 08:00 on 2026-10-24. */
+export function berlinDateTime(date: IsoDate, time: string): Date {
+  const guess = Date.parse(`${date}T${time}:00Z`);
+  // Offset of Berlin from UTC at that moment ("GMT+2" in summer, "GMT+1" in winter).
+  const offsetName =
+    new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "shortOffset" })
+      .formatToParts(new Date(guess))
+      .find((part) => part.type === "timeZoneName")?.value ?? "GMT+1";
+  const match = /GMT([+-])(\d{1,2})(?::(\d{2}))?/.exec(offsetName);
+  const offsetMinutes = match
+    ? (match[1] === "-" ? -1 : 1) * (Number(match[2]) * 60 + Number(match[3] ?? 0))
+    : 0;
+  return new Date(guess - offsetMinutes * 60_000);
+}

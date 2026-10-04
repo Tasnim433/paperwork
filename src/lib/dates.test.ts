@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { addDays, daysBetween, dueStatus, timeOfDay, todayIso } from "./dates";
+import { addDays, berlinDateTime, daysBetween, dueStatus, timeOfDay, todayIso } from "./dates";
 
 describe("todayIso", () => {
   it("uses the German calendar date", () => {
@@ -57,5 +57,12 @@ describe("timeOfDay", () => {
     expect(timeOfDay(new Date("2026-10-03T10:00:00Z"))).toBe("afternoon"); // 12:00
     expect(timeOfDay(new Date("2026-10-03T16:00:00Z"))).toBe("evening"); // 18:00
     expect(timeOfDay(new Date("2026-10-03T01:00:00Z"))).toBe("evening"); // 03:00
+  });
+});
+
+describe("berlinDateTime", () => {
+  it("converts German wall-clock time to UTC in summer and winter", () => {
+    expect(berlinDateTime("2026-10-24", "08:00").toISOString()).toBe("2026-10-24T06:00:00.000Z");
+    expect(berlinDateTime("2026-11-10", "08:00").toISOString()).toBe("2026-11-10T07:00:00.000Z");
   });
 });
